@@ -26,6 +26,4 @@ func (rm *RoomManager) Join(username string, conn *websocket.Conn) {
 	room := rm.getRoom()
 	player := newPlayer(username, conn)
 	room.addPlayer(player)
-	go player.read(room.broadcast)
-	player.write()
 }

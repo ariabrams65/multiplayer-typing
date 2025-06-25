@@ -23,7 +23,7 @@ func newPlayer(username string, conn *websocket.Conn) *player {
 	}
 }
 
-func (player *player) read(broadcast chan message) {
+func (player *player) runReadLoop(broadcast chan message) {
 	defer player.conn.Close()
 	for {
 		var msg message
@@ -37,8 +37,7 @@ func (player *player) read(broadcast chan message) {
 	}
 }
 
-// Not exactly sure if it is neccesary have a sepearte go routine for write
-func (player *player) write() {
+func (player *player) runWriteLoop() {
 	for msg := range player.receive {
 		err := player.conn.WriteJSON(msg)
 		if err != nil {

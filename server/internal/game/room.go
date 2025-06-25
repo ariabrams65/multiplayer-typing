@@ -29,4 +29,6 @@ func (room *room) run() {
 
 func (room *room) addPlayer(player *player) {
 	room.join <- player
+	go player.runReadLoop(room.broadcast)
+	player.runWriteLoop()
 }
