@@ -12,6 +12,7 @@ type player struct {
 	username string
 	conn     *websocket.Conn
 	receive  chan message
+	index    int
 }
 
 func newPlayer(username string, conn *websocket.Conn) *player {
@@ -20,6 +21,7 @@ func newPlayer(username string, conn *websocket.Conn) *player {
 		username: username,
 		conn:     conn,
 		receive:  make(chan message),
+		index:    0,
 	}
 }
 
