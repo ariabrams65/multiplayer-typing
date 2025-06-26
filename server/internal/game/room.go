@@ -11,7 +11,8 @@ type roomEvent interface {
 }
 
 type playerProgressEvent struct {
-	player *player
+	id    string
+	index int
 }
 
 func (e playerProgressEvent) eventType() string {
@@ -86,10 +87,11 @@ func (room *room) run() {
 
 func (room *room) handlePlayerProgress(event playerProgressEvent) {
 	if room.gameStarted {
+		player := room.players[event.id]
+		player.index = event.index
 		room.sendToAll(newPlayerProgressMessage(
-			event.player.username,
-			event.player.id,
-			event.player.index,
+			player.id,
+			player.index,
 		))
 	}
 }

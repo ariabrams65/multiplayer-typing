@@ -39,8 +39,7 @@ func (player *player) runReadLoop(roomInbox chan roomEvent) {
 			log.Println("player.read:", err)
 			return
 		}
-		player.index = msg.Index
-		roomInbox <- playerProgressEvent{player}
+		roomInbox <- playerProgressEvent{player.id, msg.Index}
 	}
 }
 
