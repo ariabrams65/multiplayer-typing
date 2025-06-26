@@ -93,8 +93,9 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 }
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
-	room.players[event.player.id] = event.player
 	event.player.run(room.inbox)
+	room.sendAllPlayersTo(event.player)
+	room.players[event.player.id] = event.player
 	room.sendToAll(newPlayerJoinedMessage(
 		event.player.username,
 		event.player.id,
@@ -114,6 +115,15 @@ func (room *room) handleCountdownEvent(e countdownEvent) {
 func (room *room) sendToAll(msg serverMessage) {
 	for _, player := range room.players {
 		player.sendMsg(msg)
+	}
+}
+
+func (room *room) sendAllPlayersTo(player *player) {
+	for _, p := range room.players {
+		player.sendMsg(newPlayerJoinedMessage(
+			p.username,
+			p.id,
+		))
 	}
 }
 
