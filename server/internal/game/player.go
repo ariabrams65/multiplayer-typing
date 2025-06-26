@@ -36,6 +36,7 @@ func (player *player) runReadLoop(roomInbox chan roomEvent) {
 		var msg receiveProgressMessage
 		err := player.conn.ReadJSON(&msg)
 		if err != nil {
+			roomInbox <- playerLeftEvent{player}
 			log.Println("player.read:", err)
 			return
 		}

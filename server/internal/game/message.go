@@ -49,14 +49,14 @@ func newPlayerJoinedMessage(username string, id string) serverMessage {
 	}
 }
 
-type playerRemovedMessage struct {
+type playerLeftMessage struct {
 	Id string `json:"id"`
 }
 
-func newPlayerRemovedMessage(id string) serverMessage {
+func newPlayerLeftMessage(id string) serverMessage {
 	return serverMessage{
 		Type: "removed",
-		Data: playerRemovedMessage{
+		Data: playerLeftMessage{
 			Id: id,
 		},
 	}

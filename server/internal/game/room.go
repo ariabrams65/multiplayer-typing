@@ -27,6 +27,14 @@ func (e playerJoinedEvent) eventType() string {
 	return "player-joined"
 }
 
+type playerLeftEvent struct {
+	player *player
+}
+
+func (e playerLeftEvent) eventType() string {
+	return "player-left"
+}
+
 type countdownEvent struct {
 	time int
 }
@@ -79,6 +87,8 @@ func (room *room) run() {
 			room.handlePlayerProgress(e)
 		case playerJoinedEvent:
 			room.handlePlayerJoined(e)
+		case playerLeftEvent:
+			room.handlePlayerLeft(e)
 		case countdownEvent:
 			room.handleCountdownEvent(e)
 		}
@@ -108,6 +118,15 @@ func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	if room.shouldStartCountdown() {
 		room.startCountdown()
 	}
+}
+
+func (room *room) handlePlayerLeft(event playerLeftEvent) {
+	//TODO: Delete room if there are no more players
+	delete(room.players, event.player.id)
+	close(event.player.send)
+	room.sendToAll(newPlayerLeftMessage(
+		event.player.id,
+	))
 }
 
 func (room *room) handleCountdownEvent(e countdownEvent) {
