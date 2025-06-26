@@ -1,6 +1,7 @@
 package game
 
 import (
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -96,6 +97,8 @@ func (room *room) run() {
 			room.handlePlayerLeft(e)
 		case countdownEvent:
 			room.handleCountdownEvent(e)
+		default:
+			log.Println("Unkown room event type")
 		}
 	}
 }

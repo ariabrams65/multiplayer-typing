@@ -28,15 +28,17 @@ func (e deleteRoomEvent) rmEventType() string {
 }
 
 type RoomManager struct {
-	rooms map[string]*room
-	inbox chan roomManagerEvent
+	rooms       map[string]*room
+	playerLimit int
+	inbox       chan roomManagerEvent
 }
 
 // Potentially needs a lock if multiple goroutines access
 func NewRoomManager() *RoomManager {
 	return &RoomManager{
-		rooms: make(map[string]*room),
-		inbox: make(chan roomManagerEvent),
+		rooms:       make(map[string]*room),
+		playerLimit: 5,
+		inbox:       make(chan roomManagerEvent),
 	}
 }
 
@@ -59,23 +61,17 @@ func (rm *RoomManager) handleJoinRoomEvent(event joinRoomEvent) {
 }
 
 func (rm *RoomManager) handleDeleteRoomEvent(event deleteRoomEvent) {
-	delete(rm.rooms, event.id)
 	close(rm.rooms[event.id].inbox)
+	delete(rm.rooms, event.id)
 }
 
 func (rm *RoomManager) getRoom() *room {
-	//TODO: Implement heuristic for determining what room to place new player in
-	if len(rm.rooms) == 0 {
-		room := newRoom(rm)
-		go room.run()
-		rm.rooms[room.id] = room
+	for _, room := range rm.rooms {
+		if len(room.players) < rm.playerLimit && !room.gameStarted {
+			return room
+		}
 	}
-	var room *room
-	for _, r := range rm.rooms {
-		room = r
-		break
-	}
-	return room
+	return rm.createNewRoom()
 }
 
 func (rm *RoomManager) Join(username string, conn *websocket.Conn) {
@@ -84,4 +80,11 @@ func (rm *RoomManager) Join(username string, conn *websocket.Conn) {
 
 func (rm *RoomManager) deleteRoom(id string) {
 	rm.inbox <- deleteRoomEvent{id}
+}
+
+func (rm *RoomManager) createNewRoom() *room {
+	room := newRoom(rm)
+	go room.run()
+	rm.rooms[room.id] = room
+	return room
 }
