@@ -96,6 +96,10 @@ func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	room.players[event.player.id] = event.player
 	go event.player.runReadLoop(room.inbox)
 	go event.player.runWriteLoop()
+	room.sendToAll(newPlayerJoinedMessage(
+		event.player.username,
+		event.player.id,
+	))
 	if room.shouldStartCountdown() {
 		room.startCountdown()
 	}

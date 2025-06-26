@@ -36,15 +36,15 @@ func newPlayerProgressMessage(username string, id string, index int) serverMessa
 	}
 }
 
-type playerAddedMessage struct {
+type playerJoinedMessage struct {
 	Username string `json:"username"`
 	Id       string `json:"id"`
 }
 
-func newPlayerAddedMessage(username string, id string) serverMessage {
+func newPlayerJoinedMessage(username string, id string) serverMessage {
 	return serverMessage{
-		Type: "added",
-		Data: playerAddedMessage{
+		Type: "joined",
+		Data: playerJoinedMessage{
 			Username: username,
 			Id:       id,
 		},
