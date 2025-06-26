@@ -36,7 +36,7 @@ func (e countdownEvent) eventType() string {
 
 type room struct {
 	players           map[string]*player
-	text              string
+	prompt            string
 	inbox             chan roomEvent
 	gameStarted       bool
 	countdownLength   int
@@ -47,7 +47,7 @@ type room struct {
 func newRoom() *room {
 	return &room{
 		players:           make(map[string]*player),
-		text:              generateText(),
+		prompt:            generatePrompt(),
 		inbox:             make(chan roomEvent),
 		gameStarted:       false,
 		countdownLength:   10,
@@ -94,6 +94,7 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	event.player.run(room.inbox)
+	event.player.sendMsg(newPromptMessage(room.prompt))
 	room.sendAllPlayersTo(event.player)
 	room.players[event.player.id] = event.player
 	room.sendToAll(newPlayerJoinedMessage(
@@ -135,6 +136,6 @@ func (room *room) shouldStartCountdown() bool {
 	return len(room.players) == room.numPlayersToStart && !room.countdownStarted
 }
 
-func generateText() string {
+func generatePrompt() string {
 	return "This is a test."
 }

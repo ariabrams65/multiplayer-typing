@@ -6,14 +6,14 @@ type serverMessage struct {
 	Data any    `json:"data"`
 }
 
-type textMessage struct {
+type promptMessage struct {
 	Text string `json:"text"`
 }
 
-func newTextMessage(text string) serverMessage {
+func newPromptMessage(text string) serverMessage {
 	return serverMessage{
-		Type: "text",
-		Data: textMessage{
+		Type: "prompt",
+		Data: promptMessage{
 			Text: text,
 		},
 	}
