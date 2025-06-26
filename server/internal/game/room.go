@@ -11,7 +11,7 @@ type playerProgressEvent struct {
 }
 
 func (e playerProgressEvent) eventType() string {
-	return "player-progress-event"
+	return "player-progress"
 }
 
 type playerJoinedEvent struct {
@@ -19,7 +19,15 @@ type playerJoinedEvent struct {
 }
 
 func (e playerJoinedEvent) eventType() string {
-	return "player-joined-event"
+	return "player-joined"
+}
+
+type countdownEvent struct {
+	time int
+}
+
+func (e countdownEvent) eventType() string {
+	return "countdown"
 }
 
 type room struct {
@@ -43,24 +51,34 @@ func (room *room) run() {
 			room.handlePlayerProgress(e)
 		case playerJoinedEvent:
 			room.handlePlayerJoined(e)
+		case countdownEvent:
+			room.handleCountdownEvent(e)
 		}
 	}
 }
 
 func (room *room) handlePlayerProgress(event playerProgressEvent) {
-	for _, player := range room.players {
-		player.sendMsg(newPlayerProgressMessage(
-			event.player.username,
-			event.player.id,
-			event.player.index,
-		))
-	}
+	room.sendToAll(newPlayerProgressMessage(
+		event.player.username,
+		event.player.id,
+		event.player.index,
+	))
 }
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	room.players[event.player.id] = event.player
 	go event.player.runReadLoop(room.inbox)
 	go event.player.runWriteLoop()
+}
+
+func (room *room) handleCountdownEvent(e countdownEvent) {
+	room.sendToAll(newCountdownMessage(e.time))
+}
+
+func (room *room) sendToAll(msg serverMessage) {
+	for _, player := range room.players {
+		player.sendMsg(msg)
+	}
 }
 
 func (room *room) addPlayer(username string, conn *websocket.Conn) {
