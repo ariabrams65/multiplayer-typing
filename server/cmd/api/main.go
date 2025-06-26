@@ -24,7 +24,7 @@ func joinRoom(c *gin.Context) {
 		log.Println("Upgrade:", err)
 		return
 	}
-	defer conn.Close()
+	// defer conn.Close()
 
 	rm.Join(c.Query("username"), conn)
 }

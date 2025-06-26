@@ -24,6 +24,5 @@ func (rm *RoomManager) getRoom() *room {
 
 func (rm *RoomManager) Join(username string, conn *websocket.Conn) {
 	room := rm.getRoom()
-	player := newPlayer(username, conn)
-	room.addPlayer(player)
+	room.addPlayer(username, conn)
 }
