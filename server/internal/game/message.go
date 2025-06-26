@@ -22,7 +22,7 @@ func newPromptMessage(text string) serverMessage {
 type playerProgressMessage struct {
 	Id    string  `json:"id"`
 	Index int     `json:"index"`
-	Wpm   float64 `json:wpm`
+	Wpm   float64 `json:"wpm"`
 }
 
 func newPlayerProgressMessage(id string, index int, wpm float64) serverMessage {

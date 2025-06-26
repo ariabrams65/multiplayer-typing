@@ -117,10 +117,6 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 	}
 }
 
-func calculateWpm(characters int, duration float64) float64 {
-	return (float64(characters) / 5) * (60 / duration)
-}
-
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	event.player.run()
 	event.player.sendMsg(newPromptMessage(room.prompt))
@@ -188,4 +184,8 @@ func (room *room) shouldStartCountdown() bool {
 
 func generatePrompt() string {
 	return "This is a test."
+}
+
+func calculateWpm(characters int, duration float64) float64 {
+	return (float64(characters) / 5) * (60 / duration)
 }
