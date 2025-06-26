@@ -10,37 +10,39 @@ import (
 type player struct {
 	id       string
 	username string
+	room     *room
 	conn     *websocket.Conn
 	send     chan serverMessage
 	index    int
 }
 
-func newPlayer(username string, conn *websocket.Conn) *player {
+func newPlayer(username string, conn *websocket.Conn, room *room) *player {
 	return &player{
 		id:       uuid.NewString(),
 		username: username,
+		room:     room,
 		conn:     conn,
 		send:     make(chan serverMessage),
 		index:    0,
 	}
 }
 
-func (player *player) run(roomInbox chan roomEvent) {
-	go player.runReadLoop(roomInbox)
+func (player *player) run() {
+	go player.runReadLoop()
 	go player.runWriteLoop()
 }
 
-func (player *player) runReadLoop(roomInbox chan roomEvent) {
+func (player *player) runReadLoop() {
 	defer player.conn.Close()
 	for {
 		var msg receiveProgressMessage
 		err := player.conn.ReadJSON(&msg)
 		if err != nil {
-			roomInbox <- playerLeftEvent{player}
+			player.room.removePlayer(player.id)
 			log.Println("player.read:", err)
 			return
 		}
-		roomInbox <- playerProgressEvent{player.id, msg.Index}
+		player.room.updatePlayerProgress(player.id, msg.Index)
 	}
 }
 

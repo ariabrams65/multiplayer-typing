@@ -12,9 +12,11 @@ var rm = game.NewRoomManager()
 var upgrader = websocket.Upgrader{}
 
 func main() {
+	go rm.Run()
 	router := gin.Default()
 	router.GET("/join", joinRoom)
 	router.Run("localhost:8080")
+
 }
 
 func joinRoom(c *gin.Context) {
@@ -24,7 +26,5 @@ func joinRoom(c *gin.Context) {
 		log.Println("Upgrade:", err)
 		return
 	}
-	// defer conn.Close()
-
 	rm.Join(c.Query("username"), conn)
 }

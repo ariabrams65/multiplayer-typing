@@ -3,11 +3,12 @@ package game
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
 type roomEvent interface {
-	eventType() string
+	roomEventType() string
 }
 
 type playerProgressEvent struct {
@@ -15,7 +16,7 @@ type playerProgressEvent struct {
 	index int
 }
 
-func (e playerProgressEvent) eventType() string {
+func (e playerProgressEvent) roomEventType() string {
 	return "player-progress"
 }
 
@@ -23,15 +24,15 @@ type playerJoinedEvent struct {
 	player *player
 }
 
-func (e playerJoinedEvent) eventType() string {
+func (e playerJoinedEvent) roomEventType() string {
 	return "player-joined"
 }
 
 type playerLeftEvent struct {
-	player *player
+	id string
 }
 
-func (e playerLeftEvent) eventType() string {
+func (e playerLeftEvent) roomEventType() string {
 	return "player-left"
 }
 
@@ -39,11 +40,13 @@ type countdownEvent struct {
 	time int
 }
 
-func (e countdownEvent) eventType() string {
+func (e countdownEvent) roomEventType() string {
 	return "countdown"
 }
 
 type room struct {
+	id                string
+	rm                *RoomManager
 	players           map[string]*player
 	prompt            string
 	inbox             chan roomEvent
@@ -53,8 +56,10 @@ type room struct {
 	numPlayersToStart int
 }
 
-func newRoom() *room {
+func newRoom(rm *RoomManager) *room {
 	return &room{
+		id:                uuid.NewString(),
+		rm:                rm,
 		players:           make(map[string]*player),
 		prompt:            generatePrompt(),
 		inbox:             make(chan roomEvent),
@@ -107,7 +112,7 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 }
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
-	event.player.run(room.inbox)
+	event.player.run()
 	event.player.sendMsg(newPromptMessage(room.prompt))
 	room.sendAllPlayersTo(event.player)
 	room.players[event.player.id] = event.player
@@ -121,11 +126,14 @@ func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 }
 
 func (room *room) handlePlayerLeft(event playerLeftEvent) {
-	//TODO: Delete room if there are no more players
-	delete(room.players, event.player.id)
-	close(event.player.send)
+	close(room.players[event.id].send)
+	delete(room.players, event.id)
+	if len(room.players) == 0 {
+		room.rm.deleteRoom(room.id)
+		return
+	}
 	room.sendToAll(newPlayerLeftMessage(
-		event.player.id,
+		event.id,
 	))
 }
 
@@ -152,7 +160,15 @@ func (room *room) sendAllPlayersTo(player *player) {
 }
 
 func (room *room) addPlayer(username string, conn *websocket.Conn) {
-	room.inbox <- playerJoinedEvent{newPlayer(username, conn)}
+	room.inbox <- playerJoinedEvent{newPlayer(username, conn, room)}
+}
+
+func (room *room) removePlayer(id string) {
+	room.inbox <- playerLeftEvent{id}
+}
+
+func (room *room) updatePlayerProgress(id string, index int) {
+	room.inbox <- playerProgressEvent{id, index}
 }
 
 func (room *room) shouldStartCountdown() bool {
