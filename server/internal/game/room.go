@@ -1,6 +1,10 @@
 package game
 
-import "github.com/gorilla/websocket"
+import (
+	"time"
+
+	"github.com/gorilla/websocket"
+)
 
 type roomEvent interface {
 	eventType() string
@@ -31,17 +35,37 @@ func (e countdownEvent) eventType() string {
 }
 
 type room struct {
-	players map[string]*player
-	text    string
-	inbox   chan roomEvent
+	players           map[string]*player
+	text              string
+	inbox             chan roomEvent
+	started           bool
+	countdownLength   int
+	numPlayersToStart int
 }
 
 func newRoom() *room {
 	return &room{
-		players: make(map[string]*player),
-		text:    generateText(),
-		inbox:   make(chan roomEvent),
+		players:           make(map[string]*player),
+		text:              generateText(),
+		inbox:             make(chan roomEvent),
+		started:           false,
+		countdownLength:   10,
+		numPlayersToStart: 2,
 	}
+}
+
+func (room *room) startGame() {
+	ticker := time.NewTicker(1 * time.Second)
+
+	go func() {
+		defer ticker.Stop()
+		for i := room.countdownLength; i >= 0; i-- {
+			room.inbox <- countdownEvent{
+				time: i,
+			}
+			<-ticker.C
+		}
+	}()
 }
 
 func (room *room) run() {
@@ -69,9 +93,15 @@ func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	room.players[event.player.id] = event.player
 	go event.player.runReadLoop(room.inbox)
 	go event.player.runWriteLoop()
+	if len(room.players) == room.numPlayersToStart {
+		room.startGame()
+	}
 }
 
 func (room *room) handleCountdownEvent(e countdownEvent) {
+	if e.time == 0 {
+		room.started = true
+	}
 	room.sendToAll(newCountdownMessage(e.time))
 }
 
