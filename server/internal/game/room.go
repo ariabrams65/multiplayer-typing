@@ -94,8 +94,7 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	room.players[event.player.id] = event.player
-	go event.player.runReadLoop(room.inbox)
-	go event.player.runWriteLoop()
+	event.player.run(room.inbox)
 	room.sendToAll(newPlayerJoinedMessage(
 		event.player.username,
 		event.player.id,

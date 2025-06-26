@@ -25,6 +25,11 @@ func newPlayer(username string, conn *websocket.Conn) *player {
 	}
 }
 
+func (player *player) run(roomInbox chan roomEvent) {
+	go player.runReadLoop(roomInbox)
+	go player.runWriteLoop()
+}
+
 func (player *player) runReadLoop(roomInbox chan roomEvent) {
 	defer player.conn.Close()
 	for {
