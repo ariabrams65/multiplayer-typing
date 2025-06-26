@@ -85,11 +85,13 @@ func (room *room) run() {
 }
 
 func (room *room) handlePlayerProgress(event playerProgressEvent) {
-	room.sendToAll(newPlayerProgressMessage(
-		event.player.username,
-		event.player.id,
-		event.player.index,
-	))
+	if room.gameStarted {
+		room.sendToAll(newPlayerProgressMessage(
+			event.player.username,
+			event.player.id,
+			event.player.index,
+		))
+	}
 }
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
