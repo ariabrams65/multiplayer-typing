@@ -20,16 +20,18 @@ func newPromptMessage(text string) serverMessage {
 }
 
 type playerProgressMessage struct {
-	Id    string `json:"id"`
-	Index int    `json:"index"`
+	Id    string  `json:"id"`
+	Index int     `json:"index"`
+	Wpm   float64 `json:wpm`
 }
 
-func newPlayerProgressMessage(id string, index int) serverMessage {
+func newPlayerProgressMessage(id string, index int, wpm float64) serverMessage {
 	return serverMessage{
 		Type: "progress",
 		Data: playerProgressMessage{
 			Id:    id,
 			Index: index,
+			Wpm:   wpm,
 		},
 	}
 }

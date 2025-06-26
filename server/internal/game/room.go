@@ -55,6 +55,7 @@ type room struct {
 	countdownLength   int
 	countdownStarted  bool
 	numPlayersToStart int
+	startTime         time.Time
 }
 
 func newRoom(rm *RoomManager) *room {
@@ -107,11 +108,17 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 	if room.gameStarted {
 		player := room.players[event.id]
 		player.index = event.index
+		player.wpm = calculateWpm(player.index, time.Since(room.startTime).Seconds())
 		room.sendToAll(newPlayerProgressMessage(
 			player.id,
 			player.index,
+			player.wpm,
 		))
 	}
+}
+
+func calculateWpm(characters int, duration float64) float64 {
+	return (float64(characters) / 5) * (60 / duration)
 }
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
@@ -143,6 +150,7 @@ func (room *room) handlePlayerLeft(event playerLeftEvent) {
 func (room *room) handleCountdownEvent(e countdownEvent) {
 	if e.time == 0 {
 		room.gameStarted = true
+		room.startTime = time.Now()
 	}
 	room.sendToAll(newCountdownMessage(e.time))
 }

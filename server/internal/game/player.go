@@ -14,6 +14,7 @@ type player struct {
 	conn     *websocket.Conn
 	send     chan serverMessage
 	index    int
+	wpm      float64
 }
 
 func newPlayer(username string, conn *websocket.Conn, room *room) *player {
@@ -24,6 +25,7 @@ func newPlayer(username string, conn *websocket.Conn, room *room) *player {
 		conn:     conn,
 		send:     make(chan serverMessage),
 		index:    0,
+		wpm:      0,
 	}
 }
 
