@@ -38,8 +38,9 @@ type room struct {
 	players           map[string]*player
 	text              string
 	inbox             chan roomEvent
-	started           bool
+	gameStarted       bool
 	countdownLength   int
+	countdownStarted  bool
 	numPlayersToStart int
 }
 
@@ -48,13 +49,15 @@ func newRoom() *room {
 		players:           make(map[string]*player),
 		text:              generateText(),
 		inbox:             make(chan roomEvent),
-		started:           false,
+		gameStarted:       false,
 		countdownLength:   10,
+		countdownStarted:  false,
 		numPlayersToStart: 2,
 	}
 }
 
-func (room *room) startGame() {
+func (room *room) startCountdown() {
+	room.countdownStarted = true
 	ticker := time.NewTicker(1 * time.Second)
 
 	go func() {
@@ -93,14 +96,14 @@ func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	room.players[event.player.id] = event.player
 	go event.player.runReadLoop(room.inbox)
 	go event.player.runWriteLoop()
-	if len(room.players) == room.numPlayersToStart {
-		room.startGame()
+	if room.shouldStartCountdown() {
+		room.startCountdown()
 	}
 }
 
 func (room *room) handleCountdownEvent(e countdownEvent) {
 	if e.time == 0 {
-		room.started = true
+		room.gameStarted = true
 	}
 	room.sendToAll(newCountdownMessage(e.time))
 }
@@ -113,6 +116,10 @@ func (room *room) sendToAll(msg serverMessage) {
 
 func (room *room) addPlayer(username string, conn *websocket.Conn) {
 	room.inbox <- playerJoinedEvent{newPlayer(username, conn)}
+}
+
+func (room *room) shouldStartCountdown() bool {
+	return len(room.players) == room.numPlayersToStart && !room.countdownStarted
 }
 
 func generateText() string {
