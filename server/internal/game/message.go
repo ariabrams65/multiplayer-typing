@@ -5,6 +5,18 @@ type serverMessage struct {
 	Type string `json:"type"`
 	Data any    `json:"data"`
 }
+type idMessage struct {
+	Id string `json:"id"`
+}
+
+func newIdMessage(id string) serverMessage {
+	return serverMessage{
+		Type: "id",
+		Data: idMessage{
+			Id: id,
+		},
+	}
+}
 
 type promptMessage struct {
 	Text string `json:"text"`

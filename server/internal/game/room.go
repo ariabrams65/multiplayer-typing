@@ -121,6 +121,7 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	event.player.run()
+	event.player.sendMsg(newIdMessage(event.player.id))
 	event.player.sendMsg(newPromptMessage(room.prompt))
 	room.sendAllPlayersTo(event.player)
 	room.players[event.player.id] = event.player
