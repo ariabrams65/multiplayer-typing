@@ -106,16 +106,17 @@ func (room *room) run() {
 }
 
 func (room *room) handlePlayerProgress(event playerProgressEvent) {
-	if room.gameStarted && !room.isPlayerFinished(event.id) {
-		player := room.players[event.id]
-		player.index = event.index
-		player.wpm = calculateWpm(player.index, time.Since(room.startTime).Seconds())
-		room.sendToAll(newPlayerProgressMessage(
-			player.id,
-			player.index,
-			player.wpm,
-		))
+	if !room.isProgressValid(event.id, event.index) {
+		return
 	}
+	player := room.players[event.id]
+	player.index = event.index
+	player.wpm = calculateWpm(player.index, time.Since(room.startTime).Seconds())
+	room.sendToAll(newPlayerProgressMessage(
+		player.id,
+		player.index,
+		player.wpm,
+	))
 }
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
@@ -191,6 +192,13 @@ func (room *room) shouldStartCountdown() bool {
 func (room *room) cleanup() {
 	close(room.inbox)
 	close(room.cancelCountdown)
+}
+
+func (room *room) isProgressValid(id string, index int) bool {
+	return room.gameStarted &&
+		!room.isPlayerFinished(id) &&
+		index <= room.players[id].index+1 &&
+		index >= 0
 }
 
 func generatePrompt() string {
