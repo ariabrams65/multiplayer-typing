@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/ariabrams65/multiplayer-typing/server/internal/game"
 	"github.com/gin-gonic/gin"
@@ -15,8 +16,10 @@ func main() {
 	go rm.Run()
 	router := gin.Default()
 	router.GET("/join", joinRoom)
+	router.GET("/debug/state", func(c *gin.Context) {
+		c.String(http.StatusOK, rm.DumpState())
+	})
 	router.Run("localhost:8080")
-
 }
 
 func joinRoom(c *gin.Context) {

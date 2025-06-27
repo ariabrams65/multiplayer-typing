@@ -1,7 +1,9 @@
 package game
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/gorilla/websocket"
 )
@@ -61,7 +63,7 @@ func (rm *RoomManager) handleJoinRoomEvent(event joinRoomEvent) {
 }
 
 func (rm *RoomManager) handleDeleteRoomEvent(event deleteRoomEvent) {
-	close(rm.rooms[event.id].inbox)
+	rm.rooms[event.id].cleanup()
 	delete(rm.rooms, event.id)
 }
 
@@ -87,4 +89,23 @@ func (rm *RoomManager) createNewRoom() *room {
 	go room.run()
 	rm.rooms[room.id] = room
 	return room
+}
+
+func (rm *RoomManager) DumpState() string {
+	var out strings.Builder
+
+	out.WriteString("=======================\n")
+	for _, room := range rm.rooms {
+		fmt.Fprintf(&out, "Room: %s\n", room.id)
+		fmt.Fprintf(&out, "Game Started: %v\n", room.gameStarted)
+		fmt.Fprintf(&out, "Countdown started: %v\n", room.countdownStarted)
+		out.WriteString("Players:\n")
+		for _, player := range room.players {
+			fmt.Fprintf(&out, "  - %s\n", player.username)
+		}
+		out.WriteString("\n")
+	}
+	out.WriteString("=======================\n\n")
+
+	return out.String()
 }

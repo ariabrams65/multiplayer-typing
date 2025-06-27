@@ -56,6 +56,7 @@ type room struct {
 	countdownStarted  bool
 	numPlayersToStart int
 	startTime         time.Time
+	cancelCountdown   chan struct{}
 }
 
 func newRoom(rm *RoomManager) *room {
@@ -69,22 +70,22 @@ func newRoom(rm *RoomManager) *room {
 		countdownLength:   10,
 		countdownStarted:  false,
 		numPlayersToStart: 2,
+		cancelCountdown:   make(chan struct{}),
 	}
 }
 
 func (room *room) startCountdown() {
-	room.countdownStarted = true
 	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
 
-	go func() {
-		defer ticker.Stop()
-		for i := room.countdownLength; i >= 0; i-- {
-			room.inbox <- countdownEvent{
-				time: i,
-			}
-			<-ticker.C
+	for i := room.countdownLength; i >= 0; i-- {
+		select {
+		case <-ticker.C:
+			room.inbox <- countdownEvent{i}
+		case <-room.cancelCountdown:
+			return
 		}
-	}()
+	}
 }
 
 func (room *room) run() {
@@ -127,7 +128,8 @@ func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 		event.player.id,
 	))
 	if room.shouldStartCountdown() {
-		room.startCountdown()
+		room.countdownStarted = true
+		go room.startCountdown()
 	}
 }
 
@@ -180,6 +182,11 @@ func (room *room) updatePlayerProgress(id string, index int) {
 
 func (room *room) shouldStartCountdown() bool {
 	return len(room.players) == room.numPlayersToStart && !room.countdownStarted
+}
+
+func (room *room) cleanup() {
+	close(room.inbox)
+	close(room.cancelCountdown)
 }
 
 func generatePrompt() string {
