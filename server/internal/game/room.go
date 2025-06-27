@@ -106,7 +106,7 @@ func (room *room) run() {
 }
 
 func (room *room) handlePlayerProgress(event playerProgressEvent) {
-	if room.gameStarted {
+	if room.gameStarted && !room.isPlayerFinished(event.id) {
 		player := room.players[event.id]
 		player.index = event.index
 		player.wpm = calculateWpm(player.index, time.Since(room.startTime).Seconds())
@@ -166,6 +166,10 @@ func (room *room) sendAllPlayersTo(player *player) {
 			p.id,
 		))
 	}
+}
+
+func (room *room) isPlayerFinished(id string) bool {
+	return room.players[id].index == len(room.prompt)
 }
 
 func (room *room) addPlayer(username string, conn *websocket.Conn) {

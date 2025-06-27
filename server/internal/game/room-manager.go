@@ -101,7 +101,7 @@ func (rm *RoomManager) DumpState() string {
 		fmt.Fprintf(&out, "Countdown started: %v\n", room.countdownStarted)
 		out.WriteString("Players:\n")
 		for _, player := range room.players {
-			fmt.Fprintf(&out, "  - %s\n", player.username)
+			fmt.Fprintf(&out, "  - %s : %d\n", player.username, player.index)
 		}
 		out.WriteString("\n")
 	}
