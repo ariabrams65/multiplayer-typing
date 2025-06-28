@@ -47,9 +47,7 @@ function App() {
         break;
       case 'removed':
         setPlayers(prev => {
-          return prev.filter(player => {
-            player.id == msg.data.id
-          });
+          return prev.filter(player => player.id != msg.data.id);
         });
         break;
       case 'countdown':
@@ -71,7 +69,7 @@ function App() {
       <ul>
         {players.map(p => (
           <li key={p.username}>
-            {p.username} - Index: {p.index} - WPM: {p.wpm}
+            {p.username} - ID: {p.id} - Index: {p.index} - WPM: {p.wpm}
           </li>
         ))}
       </ul>
