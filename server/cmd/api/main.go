@@ -10,7 +10,12 @@ import (
 )
 
 var rm = game.NewRoomManager()
-var upgrader = websocket.Upgrader{}
+var upgrader = websocket.Upgrader{
+	//Fix to only allow trusted origins
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
 
 func main() {
 	go rm.Run()
