@@ -56,7 +56,8 @@ function App() {
             id: msg.data.id,
             username: msg.data.username,
             index: 0,
-            wpm: 0
+            wpm: 0,
+            color: getRandomColor()
           }];
         });
         break;
@@ -106,8 +107,6 @@ function App() {
     }
   }
 
-
-
   return (
     <div onClick={() => inputRef.current?.focus()}>
       <p>Connected: {connected.toString()}</p>
@@ -120,21 +119,7 @@ function App() {
           </li>
         ))}
       </ul>
-      <div className="text-display">
-        {prompt.split('').map((char, i) => {
-          let className = ''
-          if (i < input.length) {
-            className = input[i] === char ? 'correct' : 'incorrect'
-          } else if (i === input.length) {
-            className = 'current'
-          } else {
-            className = 'pending'
-          }
-          return (
-            <span key={i} className={className}>{char}</span>
-          )
-        })}
-      </div>
+      <PromptDisplay input={input} prompt={prompt} players={players}/>
       <input
         value={input}
         ref={inputRef}
@@ -164,6 +149,61 @@ function firstDiffIndex(a, b) {
   }
   return -1;
 }
+
+function PromptDisplay({ input, prompt, players }) {
+  const firstDiff = firstDiffIndex(input, prompt);
+  const chars = [];
+
+  function getColor(index) {
+    const player = players.find(player => player.index === index);
+    if (player) {
+      return player.color;
+    }
+    return '#ffffff00'
+  }
+
+  for (let i = 0; i < firstDiff; i++) {
+    chars.push(
+      <span key={`c-${i}`} className="correct" style={{ backgroundColor: getColor(i)}}>
+        {prompt[i]}
+      </span>
+    );
+  }
+
+  for (let i = firstDiff; i < input.length; i++) {
+    chars.push(
+      <span key={`i-${i}`} className="incorrect">
+        {input[i]}
+      </span>
+    );
+  }
+
+  chars.push(
+    <span key='current' className="current">
+    {prompt[firstDiff]}
+    </span>
+  )
+
+  for (let i = firstDiff + 1; i < prompt.length; i++) {
+    chars.push(
+      <span key={`u-${i}`} className="pending" style={{ backgroundColor: getColor(i)}}>
+        {prompt[i]}
+      </span>
+    );
+  }
+
+  return <div className="prompt">{chars}</div>;
+}
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 
 
 
