@@ -2,12 +2,12 @@ import { useEffect, useState, useRef } from 'react'
 import './App.css'
 
 function App() {
-  const [username] = useState(generateUsername());
   const [prompt, setPrompt] = useState('');
   const [countdown, setCountdown] = useState(null);
   const [players, setPlayers] = useState([]);
   const [input, setInput] = useState('')
 
+  const username = useRef(generateUsername());
   const indexRef = useRef(0);
   const ws = useRef(null);
   const id = useRef(null);
@@ -16,14 +16,14 @@ function App() {
   const inputRef = useRef(null)
 
   useEffect(() => {
-    ws.current = new WebSocket(`ws://localhost:8080/join?username=${username}`);
+    ws.current = new WebSocket(`ws://localhost:8080/join?username=${username.current}`);
     ws.current.onmessage = (e) => {
       handleMessage(JSON.parse(e.data));
     }
     return () => {
       ws.current.close();
     }
-  }, [username]);
+  }, []);
 
   function handleMessage(msg) {
     const data = msg.data;
@@ -97,16 +97,16 @@ function App() {
 
   return (
     <div onClick={() => inputRef.current?.focus()}>
-      <p>Username: {username}</p>
       <p>Countdown: {countdown}</p>
+      <PromptDisplay input={input} prompt={prompt} players={players} />
+      <p>Players:</p>
       <ul>
         {players.map(p => (
-          <li key={p.id}>
-            {p.username} - ID: {p.id} - Index: {p.index} - WPM: {p.wpm}
+          <li key={p.id} style={{ backgroundColor: p.color }}>
+            {p.username} - WPM: {p.wpm}
           </li>
         ))}
       </ul>
-      <PromptDisplay input={input} prompt={prompt} players={players} />
       <input
         value={input}
         ref={inputRef}
