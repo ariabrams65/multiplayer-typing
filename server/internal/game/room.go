@@ -203,7 +203,7 @@ func (room *room) isProgressValid(id string, index int) bool {
 }
 
 func generatePrompt() string {
-	return "This is a test."
+	return "the man went to the store and found the dog on the ground when he fell out the window"
 }
 
 func calculateWpm(characters int, duration float64) float64 {
