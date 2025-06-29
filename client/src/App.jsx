@@ -7,6 +7,8 @@ function App() {
   const [countdown, setCountdown] = useState(null);
   const [players, setPlayers] = useState([]);
   const [connected, setConnected] = useState(false);
+  const [input, setInput] = useState('')
+
 
   const [index, setIndex] = useState(0);
   const indexRef = useRef(index);
@@ -84,13 +86,14 @@ function App() {
   }
 
   function handleInput(e) {
+    if (finished.current) return;
+    const value = e.target.value;
+    setInput(value);
     if (!started.current) {
-      e.target.value = '';
+      setInput('')
       return;
     }
-    if (finished.current) return;
-    const input = e.target.value;
-    const newIndex = firstDiffIndex(input, prompt);
+    const newIndex = firstDiffIndex(value, prompt);
     if (newIndex === -1) {
       finished.current = true;
       return;
@@ -117,8 +120,23 @@ function App() {
           </li>
         ))}
       </ul>
-      <p>Prompt: {prompt}</p>
+      <div className="text-display">
+        {prompt.split('').map((char, i) => {
+          let className = ''
+          if (i < input.length) {
+            className = input[i] === char ? 'correct' : 'incorrect'
+          } else if (i === input.length) {
+            className = 'current'
+          } else {
+            className = 'pending'
+          }
+          return (
+            <span key={i} className={className}>{char}</span>
+          )
+        })}
+      </div>
       <input
+        value={input}
         ref={inputRef}
         type="text"
         onChange={handleInput}
@@ -134,7 +152,6 @@ function App() {
 function generateUsername() {
   return 'User' + crypto.randomUUID();
 }
-//thaa  | this is a test
 function firstDiffIndex(a, b) {
   const minLength = Math.min(a.length, b.length);
   for (let i = 0; i < minLength; i++) {

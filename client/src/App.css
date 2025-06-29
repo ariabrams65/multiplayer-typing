@@ -1,0 +1,23 @@
+.hidden-input {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+  height: 0;
+  width: 0;
+}
+
+.correct {
+  color: black;
+}
+
+.incorrect {
+  color: red;
+}
+
+.current {
+  background-color: yellow;
+}
+
+.pending {
+  color: gray;
+}
