@@ -14,10 +14,6 @@
   color: red;
 }
 
-.current {
-  background-color: rgb(5, 193, 90);
-}
-
 .pending {
   color: gray;
 }

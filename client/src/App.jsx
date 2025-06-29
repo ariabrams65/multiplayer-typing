@@ -7,18 +7,13 @@ function App() {
   const [countdown, setCountdown] = useState(null);
   const [players, setPlayers] = useState([]);
   const [input, setInput] = useState('')
-  const [index, setIndex] = useState(0);
 
-  const indexRef = useRef(index);
+  const indexRef = useRef(0);
   const ws = useRef(null);
   const id = useRef(null);
   const finished = useRef(false);
   const started = useRef(false);
   const inputRef = useRef(null)
-
-  useEffect(() => {
-    indexRef.current = index;
-  }, [index])
 
   useEffect(() => {
     ws.current = new WebSocket(`ws://localhost:8080/join?username=${username}`);
@@ -46,7 +41,8 @@ function App() {
             username: data.username,
             index: 0,
             wpm: 0,
-            color: getRandomColor()
+            color: getRandomColor(),
+            mainPlayer: id.current === data.id
           }];
         });
         break;
@@ -87,7 +83,14 @@ function App() {
     if (newIndex <= indexRef.current + 1 && newIndex !== indexRef.current) {
       console.log(`sending index: ${newIndex}`);
       ws.current.send(JSON.stringify({ index: newIndex }));
-      setIndex(newIndex);
+      setPlayers(prev => {
+        return prev.map((player) => {
+          if (player.id === id) {
+            player.index = newIndex;
+          }
+          return player;
+        });
+      });
       indexRef.current = newIndex;
     }
   }
@@ -127,11 +130,16 @@ function PromptDisplay({ input, prompt, players }) {
   const chars = [];
 
   function getColor(index) {
-    const player = players.find(player => player.index === index);
-    if (player) {
-      return player.color;
+    let color = '#ffffff00';
+    for (const p of players) {
+      if (p.index === index && p.mainPlayer) {
+        return p.color;
+      }
+      if (p.index === index) {
+        color = p.color;
+      }
     }
-    return '#ffffff00'
+    return color;
   }
 
   for (let i = 0; i < firstDiff; i++) {
@@ -151,14 +159,7 @@ function PromptDisplay({ input, prompt, players }) {
     );
   }
 
-  chars.push(
-    <span key='current' className="current">
-      {prompt[firstDiff]}
-    </span>
-  )
-  
-
-  for (let i = firstDiff + 1; i < prompt.length; i++) {
+  for (let i = firstDiff; i < prompt.length; i++) {
     chars.push(
       <span key={`u-${i}`} className="pending" style={{ backgroundColor: getColor(i)}}>
         {prompt[i]}
