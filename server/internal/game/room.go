@@ -67,7 +67,7 @@ func newRoom(rm *RoomManager) *room {
 		prompt:            generatePrompt(),
 		inbox:             make(chan roomEvent),
 		gameStarted:       false,
-		countdownLength:   10,
+		countdownLength:   3,
 		countdownStarted:  false,
 		numPlayersToStart: 2,
 		cancelCountdown:   make(chan struct{}),

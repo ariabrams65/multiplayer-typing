@@ -1,4 +1,4 @@
-.hidden-input {
+#hidden-input {
   opacity: 0;
   position: absolute;
   pointer-events: none;

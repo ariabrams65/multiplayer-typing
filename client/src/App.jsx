@@ -6,16 +6,10 @@ function App() {
   const [prompt, setPrompt] = useState('');
   const [countdown, setCountdown] = useState(null);
   const [players, setPlayers] = useState([]);
-  const [connected, setConnected] = useState(false);
   const [input, setInput] = useState('')
-
-
   const [index, setIndex] = useState(0);
-  const indexRef = useRef(index);
-  useEffect(() => {
-    indexRef.current = index;
-  }, [index])
 
+  const indexRef = useRef(index);
   const ws = useRef(null);
   const id = useRef(null);
   const finished = useRef(false);
@@ -23,17 +17,11 @@ function App() {
   const inputRef = useRef(null)
 
   useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
+    indexRef.current = index;
+  }, [index])
 
   useEffect(() => {
     ws.current = new WebSocket(`ws://localhost:8080/join?username=${username}`);
-    ws.current.onopen = () => {
-      setConnected(true);
-    }
-    ws.current.onclose = () => {
-      setConnected(false);
-    }
     ws.current.onmessage = (e) => {
       handleMessage(JSON.parse(e.data));
     }
@@ -43,18 +31,19 @@ function App() {
   }, [username]);
 
   function handleMessage(msg) {
+    const data = msg.data;
     switch (msg.type) {
       case 'id':
-        id.current = msg.data.id;
+        id.current = data.id;
         break;
       case 'prompt':
-        setPrompt(msg.data.text);
+        setPrompt(data.text);
         break;
       case 'joined':
         setPlayers(prev => {
           return [...prev, {
-            id: msg.data.id,
-            username: msg.data.username,
+            id: data.id,
+            username: data.username,
             index: 0,
             wpm: 0,
             color: getRandomColor()
@@ -63,21 +52,21 @@ function App() {
         break;
       case 'removed':
         setPlayers(prev => {
-          return prev.filter(player => player.id !== msg.data.id);
+          return prev.filter(player => player.id !== data.id);
         });
         break;
       case 'countdown':
-        if (msg.data.time === 0) {
+        if (data.time === 0) {
           started.current = true;
         }
-        setCountdown(msg.data.time);
+        setCountdown(data.time);
         break;
       case 'progress':
         setPlayers(prev => {
           return prev.map((player) => {
-            if (player.id === msg.data.id) {
-              player.index = msg.data.index;
-              player.wpm = msg.data.wpm;
+            if (player.id === data.id) {
+              player.index = data.index;
+              player.wpm = data.wpm;
             }
             return player;
           });
@@ -87,15 +76,11 @@ function App() {
   }
 
   function handleInput(e) {
-    if (finished.current) return;
+    if (finished.current || !started.current) return;
     const value = e.target.value;
     setInput(value);
-    if (!started.current) {
-      setInput('')
-      return;
-    }
     const newIndex = firstDiffIndex(value, prompt);
-    if (newIndex === -1) {
+    if (newIndex === prompt.length) {
       finished.current = true;
       return;
     }
@@ -109,17 +94,16 @@ function App() {
 
   return (
     <div onClick={() => inputRef.current?.focus()}>
-      <p>Connected: {connected.toString()}</p>
       <p>Username: {username}</p>
       <p>Countdown: {countdown}</p>
       <ul>
         {players.map(p => (
-          <li key={p.username}>
+          <li key={p.id}>
             {p.username} - ID: {p.id} - Index: {p.index} - WPM: {p.wpm}
           </li>
         ))}
       </ul>
-      <PromptDisplay input={input} prompt={prompt} players={players}/>
+      <PromptDisplay input={input} prompt={prompt} players={players} />
       <input
         value={input}
         ref={inputRef}
@@ -136,18 +120,6 @@ function App() {
 
 function generateUsername() {
   return 'User' + crypto.randomUUID();
-}
-function firstDiffIndex(a, b) {
-  const minLength = Math.min(a.length, b.length);
-  for (let i = 0; i < minLength; i++) {
-    if (a[i] !== b[i]) {
-      return i
-    }
-  }
-  if (a.length != b.length) {
-    return minLength;
-  }
-  return -1;
 }
 
 function PromptDisplay({ input, prompt, players }) {
@@ -171,18 +143,20 @@ function PromptDisplay({ input, prompt, players }) {
   }
 
   for (let i = firstDiff; i < input.length; i++) {
+    const value = input[i] != ' ' ? input[i] : '_';
     chars.push(
       <span key={`i-${i}`} className="incorrect">
-        {input[i]}
+        {value}
       </span>
     );
   }
 
   chars.push(
     <span key='current' className="current">
-    {prompt[firstDiff]}
+      {prompt[firstDiff]}
     </span>
   )
+  
 
   for (let i = firstDiff + 1; i < prompt.length; i++) {
     chars.push(
@@ -204,7 +178,15 @@ function getRandomColor() {
   return color;
 }
 
-
-
+function firstDiffIndex(a, b) {
+  const minLength = Math.min(a.length, b.length);
+  let i = 0;
+  for (; i < minLength; i++) {
+    if (a[i] !== b[i]) {
+      return i
+    }
+  }
+  return i;
+}
 
 export default App
