@@ -5,10 +5,10 @@ function App() {
   const [prompt, setPrompt] = useState('');
   const [countdown, setCountdown] = useState(null);
   const [players, setPlayers] = useState([]);
+  const [myId, setMyId] = useState(null);
   const [input, setInput] = useState('');
 
   const ws = useRef(null);
-  const myId = useRef(null);
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -25,7 +25,7 @@ function App() {
     const data = msg.data;
     switch (msg.type) {
       case 'id':
-        myId.current = data.id;
+        setMyId(data.id);
         break;
       case 'prompt':
         setPrompt(data.text);
@@ -37,8 +37,7 @@ function App() {
             username: data.username,
             index: 0,
             wpm: 0,
-            color: getRandomColor(),
-            mainPlayer: myId.current === data.id
+            color: getRandomColor()
           }];
         });
         break;
@@ -54,7 +53,7 @@ function App() {
         setPlayers(prev => {
           return prev.map((player) => {
             if (player.id === data.id) {
-              if (data.id === myId.current) {
+              if (data.id === myId) {
                 return {
                   ...player,
                   wpm: data.wpm
@@ -87,7 +86,7 @@ function App() {
   }
 
   function handleInput(e) {
-    if (playerFinished(myId.current) || !gameStarted()) return;
+    if (playerFinished(myId) || !gameStarted()) return;
     setInput(e.target.value);
     const newIndex = firstDiffIndex(e.target.value, prompt);
     const currentIndex = getCurrentIndex();
@@ -96,7 +95,7 @@ function App() {
       ws.current.send(JSON.stringify({ index: newIndex }));
       setPlayers(prev => {
         return prev.map((player) => {
-          if (player.id === myId.current) {
+          if (player.id === myId) {
             return {
               ...player,
               index: newIndex
@@ -113,7 +112,7 @@ function App() {
   }
 
   function getCurrentIndex() {
-    return players.find(p => p.mainPlayer).index;
+    return players.find(p => p.id === myId).index;
   }
 
   function playerFinished(id) {
@@ -132,7 +131,7 @@ function App() {
   return (
     <div onClick={() => inputRef.current?.focus()}>
       <p>{gameStatus}</p>
-      <PromptDisplay input={input} prompt={prompt} players={players} />
+      <PromptDisplay input={input} prompt={prompt} players={players} myId={myId} />
       <p>Players:</p>
       <ul>
         {players.map(p => (
@@ -159,7 +158,7 @@ function generateUsername() {
   return 'User' + crypto.randomUUID();
 }
 
-function PromptDisplay({ input, prompt, players }) {
+function PromptDisplay({ input, prompt, players, myId }) {
   const firstDiff = firstDiffIndex(input, prompt);
   const chars = [];
 
@@ -192,7 +191,7 @@ function PromptDisplay({ input, prompt, players }) {
     let color = '#ffffff00';
     for (const p of players) {
       if (p.index === index) {
-        if (p.mainPlayer) {
+        if (p.id === myId) {
           return p.color;
         }
         color = p.color;
