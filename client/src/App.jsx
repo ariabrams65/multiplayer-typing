@@ -138,7 +138,7 @@ function App() {
       <ul>
         {players.map(p => (
           <li key={p.id} style={{ backgroundColor: p.color }}>
-            {p.username} - WPM: {p.wpm}
+            {p.username} - WPM: {Math.round(p.wpm)}
           </li>
         ))}
       </ul>
