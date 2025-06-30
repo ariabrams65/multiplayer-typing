@@ -133,9 +133,11 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 	}
 	player := room.players[event.id]
 	player.index = event.index
+	player.wpm = calculateWpm(player.index, time.Since(room.startTime).Seconds())
 	room.sendToAll(newPlayerProgressMessage(
 		player.id,
 		player.index,
+		player.wpm,
 	))
 }
 
@@ -178,8 +180,10 @@ func (room *room) handleCountdownEvent(e countdownEvent) {
 
 func (room *room) handleWpmEvent() {
 	for _, p := range room.players {
-		p.wpm = calculateWpm(p.index, time.Since(room.startTime).Seconds())
-		room.sendToAll(newWpmMessage(p.id, p.wpm))
+		if !room.isPlayerFinished(p.id) {
+			p.wpm = calculateWpm(p.index, time.Since(room.startTime).Seconds())
+			room.sendToAll(newWpmMessage(p.id, p.wpm))
+		}
 	}
 }
 
@@ -231,7 +235,7 @@ func (room *room) isProgressValid(id string, index int) bool {
 }
 
 func generatePrompt() string {
-	return "the man went to the store and found the dog on the ground when he fell out the window"
+	return "the man went to the store and found the things on the shelf already made when he went to the home"
 }
 
 func calculateWpm(characters int, duration float64) float64 {

@@ -52,13 +52,19 @@ function App() {
         setCountdown(data.time);
         break;
       case 'progress':
-        if (data.id === id.current) return;
         setPlayers(prev => {
           return prev.map((player) => {
             if (player.id === data.id) {
+              if (data.id === id.current) {
+                return {
+                  ...player,
+                  wpm: data.wpm
+                };
+              }
               return {
                 ...player,
                 index: data.index,
+                wpm: data.wpm
               };
             }
             return player;
@@ -85,14 +91,14 @@ function App() {
     if (finished || !gameStarted()) return;
     setInput(e.target.value);
     const newIndex = firstDiffIndex(e.target.value, prompt);
-    if (newIndex === prompt.length) {
-      setFinished(true);
-      return;
-    }
     const currentIndex = getCurrentIndex();
     if (newIndex <= currentIndex + 1 && newIndex !== currentIndex) {
       console.log(`sending index: ${newIndex}`);
       ws.current.send(JSON.stringify({ index: newIndex }));
+    if (newIndex === prompt.length) {
+      setFinished(true);
+      return;
+    }
       setPlayers(prev => {
         return prev.map((player) => {
           if (player.id === id.current) {
