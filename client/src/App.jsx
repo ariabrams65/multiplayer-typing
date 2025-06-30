@@ -59,8 +59,20 @@ function App() {
               return {
                 ...player,
                 index: data.index,
-                wpm: data.wpm
               };
+            }
+            return player;
+          });
+        });
+        break;
+      case 'wpm':
+        setPlayers(prev => {
+          return prev.map((player) => {
+            if (player.id === data.id) {
+              return {
+                ...player,
+                wpm: data.wpm
+              }
             }
             return player;
           });

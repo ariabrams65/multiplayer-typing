@@ -45,6 +45,12 @@ func (e countdownEvent) roomEventType() string {
 	return "countdown"
 }
 
+type wpmEvent struct{}
+
+func (e wpmEvent) roomEventType() string {
+	return "wpm"
+}
+
 type room struct {
 	id                string
 	rm                *RoomManager
@@ -56,7 +62,7 @@ type room struct {
 	countdownStarted  bool
 	numPlayersToStart int
 	startTime         time.Time
-	cancelCountdown   chan struct{}
+	cancel            chan struct{}
 }
 
 func newRoom(rm *RoomManager) *room {
@@ -70,7 +76,7 @@ func newRoom(rm *RoomManager) *room {
 		countdownLength:   10,
 		countdownStarted:  false,
 		numPlayersToStart: 2,
-		cancelCountdown:   make(chan struct{}),
+		cancel:            make(chan struct{}),
 	}
 }
 
@@ -82,7 +88,21 @@ func (room *room) startCountdown() {
 		select {
 		case <-ticker.C:
 			room.inbox <- countdownEvent{i}
-		case <-room.cancelCountdown:
+		case <-room.cancel:
+			return
+		}
+	}
+}
+
+func (room *room) startWpmTicker() {
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			room.inbox <- wpmEvent{}
+		case <-room.cancel:
 			return
 		}
 	}
@@ -99,6 +119,8 @@ func (room *room) run() {
 			room.handlePlayerLeft(e)
 		case countdownEvent:
 			room.handleCountdownEvent(e)
+		case wpmEvent:
+			room.handleWpmEvent()
 		default:
 			log.Println("Unkown room event type")
 		}
@@ -111,11 +133,9 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 	}
 	player := room.players[event.id]
 	player.index = event.index
-	player.wpm = calculateWpm(player.index, time.Since(room.startTime).Seconds())
 	room.sendToAll(newPlayerProgressMessage(
 		player.id,
 		player.index,
-		player.wpm,
 	))
 }
 
@@ -151,8 +171,16 @@ func (room *room) handleCountdownEvent(e countdownEvent) {
 	if e.time == 0 {
 		room.gameStarted = true
 		room.startTime = time.Now()
+		go room.startWpmTicker()
 	}
 	room.sendToAll(newCountdownMessage(e.time))
+}
+
+func (room *room) handleWpmEvent() {
+	for _, p := range room.players {
+		p.wpm = calculateWpm(p.index, time.Since(room.startTime).Seconds())
+		room.sendToAll(newWpmMessage(p.id, p.wpm))
+	}
 }
 
 func (room *room) sendToAll(msg serverMessage) {
@@ -192,7 +220,7 @@ func (room *room) shouldStartCountdown() bool {
 
 func (room *room) cleanup() {
 	close(room.inbox)
-	close(room.cancelCountdown)
+	close(room.cancel)
 }
 
 func (room *room) isProgressValid(id string, index int) bool {

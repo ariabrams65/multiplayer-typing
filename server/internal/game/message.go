@@ -32,18 +32,16 @@ func newPromptMessage(text string) serverMessage {
 }
 
 type playerProgressMessage struct {
-	Id    string  `json:"id"`
-	Index int     `json:"index"`
-	Wpm   float64 `json:"wpm"`
+	Id    string `json:"id"`
+	Index int    `json:"index"`
 }
 
-func newPlayerProgressMessage(id string, index int, wpm float64) serverMessage {
+func newPlayerProgressMessage(id string, index int) serverMessage {
 	return serverMessage{
 		Type: "progress",
 		Data: playerProgressMessage{
 			Id:    id,
 			Index: index,
-			Wpm:   wpm,
 		},
 	}
 }
@@ -85,6 +83,21 @@ func newCountdownMessage(time int) serverMessage {
 		Type: "countdown",
 		Data: countdownMessage{
 			Time: time,
+		},
+	}
+}
+
+type wpmMessage struct {
+	Id  string  `json:"id"`
+	Wpm float64 `json:"wpm"`
+}
+
+func newWpmMessage(id string, wpm float64) serverMessage {
+	return serverMessage{
+		Type: "wpm",
+		Data: wpmMessage{
+			Id:  id,
+			Wpm: wpm,
 		},
 	}
 }
