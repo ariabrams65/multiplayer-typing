@@ -5,12 +5,11 @@ function App() {
   const [prompt, setPrompt] = useState('');
   const [countdown, setCountdown] = useState(null);
   const [players, setPlayers] = useState([]);
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState('');
+  const [finished, setFinished] = useState(false);
 
   const ws = useRef(null);
   const id = useRef(null);
-  const finished = useRef(false);
-  const started = useRef(false);
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -50,9 +49,6 @@ function App() {
         });
         break;
       case 'countdown':
-        if (data.time === 0) {
-          started.current = true;
-        }
         setCountdown(data.time);
         break;
       case 'progress':
@@ -70,11 +66,11 @@ function App() {
   }
 
   function handleInput(e) {
-    if (finished.current || !started.current) return;
+    if (finished || !gameStarted()) return;
     setInput(e.target.value);
     const newIndex = firstDiffIndex(e.target.value, prompt);
     if (newIndex === prompt.length) {
-      finished.current = true;
+      setFinished(true);
       return;
     }
     const currentIndex = getCurrentIndex();
@@ -93,6 +89,10 @@ function App() {
         });
       });
     }
+  }
+
+  function gameStarted() {
+    return countdown === 0;
   }
 
   function getCurrentIndex() {
