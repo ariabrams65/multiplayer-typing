@@ -7,7 +7,6 @@ function App() {
   const [players, setPlayers] = useState([]);
   const [input, setInput] = useState('')
 
-  const username = useRef(generateUsername());
   const indexRef = useRef(0);
   const ws = useRef(null);
   const id = useRef(null);
@@ -16,7 +15,7 @@ function App() {
   const inputRef = useRef(null)
 
   useEffect(() => {
-    ws.current = new WebSocket(`ws://localhost:8080/join?username=${username.current}`);
+    ws.current = new WebSocket(`ws://localhost:8080/join?username=${generateUsername()}`);
     ws.current.onmessage = (e) => {
       handleMessage(JSON.parse(e.data));
     }
@@ -73,9 +72,8 @@ function App() {
 
   function handleInput(e) {
     if (finished.current || !started.current) return;
-    const value = e.target.value;
-    setInput(value);
-    const newIndex = firstDiffIndex(value, prompt);
+    setInput(e.target.value);
+    const newIndex = firstDiffIndex(e.target.value, prompt);
     if (newIndex === prompt.length) {
       finished.current = true;
       return;
@@ -86,7 +84,10 @@ function App() {
       setPlayers(prev => {
         return prev.map((player) => {
           if (player.id === id) {
-            player.index = newIndex;
+            return {
+              ...player,
+              index: newIndex
+            }
           }
           return player;
         });
@@ -129,22 +130,9 @@ function PromptDisplay({ input, prompt, players }) {
   const firstDiff = firstDiffIndex(input, prompt);
   const chars = [];
 
-  function getColor(index) {
-    let color = '#ffffff00';
-    for (const p of players) {
-      if (p.index === index && p.mainPlayer) {
-        return p.color;
-      }
-      if (p.index === index) {
-        color = p.color;
-      }
-    }
-    return color;
-  }
-
   for (let i = 0; i < firstDiff; i++) {
     chars.push(
-      <span key={`c-${i}`} className="correct" style={{ backgroundColor: getColor(i)}}>
+      <span key={`c-${i}`} className="correct" style={{ backgroundColor: getBackgroundColor(i)}}>
         {prompt[i]}
       </span>
     );
@@ -161,12 +149,24 @@ function PromptDisplay({ input, prompt, players }) {
 
   for (let i = firstDiff; i < prompt.length; i++) {
     chars.push(
-      <span key={`u-${i}`} className="pending" style={{ backgroundColor: getColor(i)}}>
+      <span key={`u-${i}`} className="pending" style={{ backgroundColor: getBackgroundColor(i)}}>
         {prompt[i]}
       </span>
     );
   }
 
+  function getBackgroundColor(index) {
+    let color = '#ffffff00';
+    for (const p of players) {
+      if (p.index === index) {
+        if (p.mainPlayer) {
+          return p.color;
+        }
+        color = p.color;
+      }
+    }
+    return color;
+  }
   return <div className="prompt">{chars}</div>;
 }
 
