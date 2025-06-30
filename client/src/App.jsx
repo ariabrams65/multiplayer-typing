@@ -99,9 +99,18 @@ function App() {
     return players.find(p => p.mainPlayer).index;
   }
 
+  let gameStatus;
+  if (countdown === null) {
+    gameStatus = "Waiting for players to join..." ;
+  } else if (!gameStarted()) {
+    gameStatus = `Countdown: ${countdown}`;
+  } else {
+    gameStatus = "Game Started!";
+  }
+
   return (
     <div onClick={() => inputRef.current?.focus()}>
-      <p>Countdown: {countdown}</p>
+      <p>{gameStatus}</p>
       <PromptDisplay input={input} prompt={prompt} players={players} />
       <p>Players:</p>
       <ul>
