@@ -52,11 +52,15 @@ function App() {
         setCountdown(data.time);
         break;
       case 'progress':
+        if (data.id === id.current) return;
         setPlayers(prev => {
           return prev.map((player) => {
             if (player.id === data.id) {
-              player.index = data.index;
-              player.wpm = data.wpm;
+              return {
+                ...player,
+                index: data.index,
+                wpm: data.wpm
+              };
             }
             return player;
           });
@@ -79,7 +83,7 @@ function App() {
       ws.current.send(JSON.stringify({ index: newIndex }));
       setPlayers(prev => {
         return prev.map((player) => {
-          if (player.id === id) {
+          if (player.id === id.current) {
             return {
               ...player,
               index: newIndex
