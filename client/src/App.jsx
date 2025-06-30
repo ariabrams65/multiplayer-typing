@@ -7,7 +7,6 @@ function App() {
   const [players, setPlayers] = useState([]);
   const [input, setInput] = useState('')
 
-  const indexRef = useRef(0);
   const ws = useRef(null);
   const id = useRef(null);
   const finished = useRef(false);
@@ -78,7 +77,8 @@ function App() {
       finished.current = true;
       return;
     }
-    if (newIndex <= indexRef.current + 1 && newIndex !== indexRef.current) {
+    const currentIndex = getCurrentIndex();
+    if (newIndex <= currentIndex + 1 && newIndex !== currentIndex) {
       console.log(`sending index: ${newIndex}`);
       ws.current.send(JSON.stringify({ index: newIndex }));
       setPlayers(prev => {
@@ -92,8 +92,11 @@ function App() {
           return player;
         });
       });
-      indexRef.current = newIndex;
     }
+  }
+
+  function getCurrentIndex() {
+    return players.find(p => p.mainPlayer).index;
   }
 
   return (
