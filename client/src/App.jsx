@@ -6,10 +6,9 @@ function App() {
   const [countdown, setCountdown] = useState(null);
   const [players, setPlayers] = useState([]);
   const [input, setInput] = useState('');
-  const [finished, setFinished] = useState(false);
 
   const ws = useRef(null);
-  const id = useRef(null);
+  const myId = useRef(null);
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -26,7 +25,7 @@ function App() {
     const data = msg.data;
     switch (msg.type) {
       case 'id':
-        id.current = data.id;
+        myId.current = data.id;
         break;
       case 'prompt':
         setPrompt(data.text);
@@ -39,7 +38,7 @@ function App() {
             index: 0,
             wpm: 0,
             color: getRandomColor(),
-            mainPlayer: id.current === data.id
+            mainPlayer: myId.current === data.id
           }];
         });
         break;
@@ -55,7 +54,7 @@ function App() {
         setPlayers(prev => {
           return prev.map((player) => {
             if (player.id === data.id) {
-              if (data.id === id.current) {
+              if (data.id === myId.current) {
                 return {
                   ...player,
                   wpm: data.wpm
@@ -88,20 +87,16 @@ function App() {
   }
 
   function handleInput(e) {
-    if (finished || !gameStarted()) return;
+    if (playerFinished(myId.current) || !gameStarted()) return;
     setInput(e.target.value);
     const newIndex = firstDiffIndex(e.target.value, prompt);
     const currentIndex = getCurrentIndex();
     if (newIndex <= currentIndex + 1 && newIndex !== currentIndex) {
       console.log(`sending index: ${newIndex}`);
       ws.current.send(JSON.stringify({ index: newIndex }));
-    if (newIndex === prompt.length) {
-      setFinished(true);
-      return;
-    }
       setPlayers(prev => {
         return prev.map((player) => {
-          if (player.id === id.current) {
+          if (player.id === myId.current) {
             return {
               ...player,
               index: newIndex
@@ -121,6 +116,10 @@ function App() {
     return players.find(p => p.mainPlayer).index;
   }
 
+  function playerFinished(id) {
+    return players.find(p => p.id === id).index === prompt.length;
+  }
+
   let gameStatus;
   if (countdown === null) {
     gameStatus = "Waiting for players to join..." ;
@@ -138,7 +137,7 @@ function App() {
       <ul>
         {players.map(p => (
           <li key={p.id} style={{ backgroundColor: p.color }}>
-            {p.username} - WPM: {Math.round(p.wpm)}
+            {p.username} - WPM: {Math.round(p.wpm)} - {playerFinished(p.id) && "FINISHED"}
           </li>
         ))}
       </ul>
