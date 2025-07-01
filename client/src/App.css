@@ -1,23 +1,5 @@
 body {
   font-family: 'Roboto Mono', monospace;
-}
-
-#hidden-input {
-  opacity: 0;
-  position: absolute;
-  pointer-events: none;
-  height: 0;
-  width: 0;
-}
-
-.correct {
-  color: black;
-}
-
-.incorrect {
-  color: red;
-}
-
-.pending {
-  color: gray;
+  background-color: rgb(51, 58, 69);
+  color: rgb(226, 226, 226);
 }

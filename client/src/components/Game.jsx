@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { firstDiffIndex, generateUsername } from "../utils";
+
 import Prompt from "./Prompt";
 import PlayerList from "./PlayerList";
 
-const colors = ['#EB757A', '#EB75DE', '#BB75EB', '#7577EB', '#75CFEB', '#75EBCA', '#DCEB75'];
+import styles from "./Game.module.css"
+
+const colors = ['#EB757A', '#DCEB75', '#BB75EB', '#EB75DE', '#7577EB', '#75CFEB', '#75EBCA'];
 
 export default function Game() {
   const [prompt, setPrompt] = useState('');
@@ -90,10 +93,10 @@ export default function Game() {
   }
 
   function handleInput(e) {
-    if (playerFinished(myId) || !gameStarted()) return;
+    if (playerFinished(myId) || countdown !== 0) return;
     setInput(e.target.value);
     const newIndex = firstDiffIndex(e.target.value, prompt);
-    const currentIndex = getCurrentIndex();
+    const currentIndex = players.find(p => p.id === myId).index;
     if (newIndex <= currentIndex + 1 && newIndex !== currentIndex) {
       console.log(`sending index: ${newIndex}`);
       ws.current.send(JSON.stringify({ index: newIndex }));
@@ -111,14 +114,6 @@ export default function Game() {
     }
   }
 
-  function gameStarted() {
-    return countdown === 0;
-  }
-
-  function getCurrentIndex() {
-    return players.find(p => p.id === myId).index;
-  }
-
   function playerFinished(id) {
     return players.find(p => p.id === id).index === prompt.length;
   }
@@ -126,15 +121,15 @@ export default function Game() {
   let gameStatus;
   if (countdown === null) {
     gameStatus = "Waiting for players to join..." ;
-  } else if (!gameStarted()) {
-    gameStatus = `Countdown: ${countdown}`;
+  } else if (countdown !== 0) {
+    gameStatus = countdown;
   } else {
-    gameStatus = "Game Started!";
+    gameStatus = "";
   }
 
   return (
-    <div onClick={() => inputRef.current?.focus()}>
-      <p>{gameStatus}</p>
+    <div id={styles['game']} onClick={() => inputRef.current?.focus()}>
+      <p id={styles.status}>{gameStatus}</p>
       <Prompt input={input} prompt={prompt} players={players} myId={myId} />
       <PlayerList players={players} playerFinished={playerFinished} />
       <input
@@ -145,7 +140,7 @@ export default function Game() {
         autoFocus
         spellCheck={false}
         autoComplete="off"
-        id="hidden-input"
+        id={styles['hidden-input']}
       />
     </div>
   )

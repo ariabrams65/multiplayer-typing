@@ -4,3 +4,7 @@ what happens when last player leaves lobby (before game has started) and another
 Confirm that each state is owned by only 1 goroutine
 
 instead of sending wpm on keypress, send out wpm every second
+
+disable arrow keys in text input
+
+on safari, searching the url before pressing enter loads into game

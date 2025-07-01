@@ -1,12 +1,14 @@
 import { firstDiffIndex } from "../utils";
 
+import styles from "./Prompt.module.css"
+
 export default function Prompt({ input, prompt, players, myId }) {
   const firstDiff = firstDiffIndex(input, prompt);
   const chars = [];
 
   for (let i = 0; i < firstDiff; i++) {
     chars.push(
-      <span key={`c-${i}`} className="correct" style={{ backgroundColor: getBackgroundColor(i)}}>
+      <span key={`c-${i}`} className={`${styles.correct} ${styles.caret}`} style={{ backgroundColor: getBackgroundColor(i)}}>
         {prompt[i]}
       </span>
     );
@@ -15,7 +17,7 @@ export default function Prompt({ input, prompt, players, myId }) {
   for (let i = firstDiff; i < input.length; i++) {
     const value = input[i] != ' ' ? input[i] : '_';
     chars.push(
-      <span key={`i-${i}`} className="incorrect">
+      <span key={`i-${i}`} className={styles.incorrect}>
         {value}
       </span>
     );
@@ -23,7 +25,7 @@ export default function Prompt({ input, prompt, players, myId }) {
 
   for (let i = firstDiff; i < prompt.length; i++) {
     chars.push(
-      <span key={`u-${i}`} className="pending" style={{ backgroundColor: getBackgroundColor(i)}}>
+      <span key={`u-${i}`} className={`${styles.pending} ${styles.caret}`} style={{ backgroundColor: getBackgroundColor(i)}}>
         {prompt[i]}
       </span>
     );
@@ -41,5 +43,5 @@ export default function Prompt({ input, prompt, players, myId }) {
     }
     return color;
   }
-  return <div className="prompt">{chars}</div>;
+  return <div id={styles.prompt}>{chars}</div>;
 }
