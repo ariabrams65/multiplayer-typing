@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from 'react'
 import './App.css'
 
+const colors = ['#EB757A', '#EB75DE', '#BB75EB', '#7577EB', '#75CFEB', '#75EBCA', '#DCEB75'];
+
 function App() {
   const [prompt, setPrompt] = useState('');
   const [countdown, setCountdown] = useState(null);
@@ -37,7 +39,7 @@ function App() {
             username: data.username,
             index: 0,
             wpm: 0,
-            color: getRandomColor()
+            color: colors.pop()
           }];
         });
         break;
@@ -200,15 +202,6 @@ function PromptDisplay({ input, prompt, players, myId }) {
     return color;
   }
   return <div className="prompt">{chars}</div>;
-}
-
-function getRandomColor() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
 }
 
 function firstDiffIndex(a, b) {
