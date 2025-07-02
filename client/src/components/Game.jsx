@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { firstDiffIndex, generateUsername } from "../utils";
+import { firstDiffIndex } from "../utils";
 
 import Prompt from "./Prompt";
 import PlayerList from "./PlayerList";
@@ -19,7 +19,7 @@ export default function Game() {
   const inputRef = useRef(null)
 
   useEffect(() => {
-    ws.current = new WebSocket(`ws://localhost:8080/join?username=${generateUsername()}`);
+    ws.current = new WebSocket(`ws://localhost:8080/join?username=GUEST`);
     ws.current.onmessage = (e) => {
       handleMessage(JSON.parse(e.data));
     }

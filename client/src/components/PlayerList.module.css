@@ -10,8 +10,8 @@
     color: rgb(51, 58, 69);
     padding: 10px;
     margin-bottom: 20px;
-    min-width: 600px;
-    width: fit-content;
+    width: 75%;
+    max-width: 500px;
     border-radius: 5px;
 }
 

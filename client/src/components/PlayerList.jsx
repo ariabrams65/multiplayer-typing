@@ -6,7 +6,7 @@ export default function PlayerList({ players, playerFinished }) {
       {players.map(p => (
         <li key={p.id} className={`${styles.player} ${playerFinished(p.id) ? styles.finished : ''}`} style={{ backgroundColor: p.color }}>
           <span>{p.username}</span>
-          <span>{Math.round(p.wpm)}</span>
+          <span>{Math.round(p.wpm)} WPM</span>
         </li>
       ))}
     </ol>

@@ -23,7 +23,7 @@ type bot struct {
 }
 
 func newBot(wpm int) *bot {
-	u := url.URL{Scheme: "ws", Host: "localhost:8080", Path: "/join", RawQuery: "username=bot"}
+	u := url.URL{Scheme: "ws", Host: "localhost:8080", Path: "/join", RawQuery: "username=BOT"}
 	return &bot{
 		url: u.String(),
 		wpm: wpm,
