@@ -65,6 +65,7 @@ type room struct {
 	countdownStarted  bool
 	numPlayersToStart int
 	startTime         time.Time
+	availableColors   []string
 	cancel            chan struct{}
 }
 
@@ -79,6 +80,7 @@ func newRoom(rm *RoomManager) *room {
 		countdownLength:   10,
 		countdownStarted:  false,
 		numPlayersToStart: 2,
+		availableColors:   []string{"#EB757A", "#DCEB75", "#BB75EB", "#EB75DE", "#7577EB", "#75CFEB", "#75EBCA"},
 		cancel:            make(chan struct{}),
 	}
 }
@@ -145,6 +147,7 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 }
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {
+	event.player.color = room.getAvailableColor()
 	event.player.run()
 	event.player.sendMsg(newIdMessage(event.player.id))
 	event.player.sendMsg(newPromptMessage(room.prompt))
@@ -153,6 +156,7 @@ func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	room.sendToAll(newPlayerJoinedMessage(
 		event.player.username,
 		event.player.id,
+		event.player.color,
 	))
 	if room.shouldStartCountdown() {
 		room.countdownStarted = true
@@ -201,6 +205,7 @@ func (room *room) sendAllPlayersTo(player *player) {
 		player.sendMsg(newPlayerJoinedMessage(
 			p.username,
 			p.id,
+			p.color,
 		))
 	}
 }
@@ -226,8 +231,8 @@ func (room *room) shouldStartCountdown() bool {
 }
 
 func (room *room) cleanup() {
-	close(room.inbox)
 	close(room.cancel)
+	close(room.inbox)
 }
 
 func (room *room) isProgressValid(id string, index int) bool {
@@ -235,6 +240,13 @@ func (room *room) isProgressValid(id string, index int) bool {
 		!room.isPlayerFinished(id) &&
 		index <= room.players[id].index+1 &&
 		index >= 0
+}
+
+func (room *room) getAvailableColor() string {
+	i := len(room.availableColors) - 1
+	color := room.availableColors[i]
+	room.availableColors = append(room.availableColors[:i], room.availableColors[i+1:]...)
+	return color
 }
 
 func generatePrompt() string {

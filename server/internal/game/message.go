@@ -51,14 +51,16 @@ func newPlayerProgressMessage(id string, index int, wpm float64) serverMessage {
 type playerJoinedMessage struct {
 	Username string `json:"username"`
 	Id       string `json:"id"`
+	Color    string `json:"color"`
 }
 
-func newPlayerJoinedMessage(username string, id string) serverMessage {
+func newPlayerJoinedMessage(username string, id string, color string) serverMessage {
 	return serverMessage{
 		Type: "joined",
 		Data: playerJoinedMessage{
 			Username: username,
 			Id:       id,
+			Color:    color,
 		},
 	}
 }

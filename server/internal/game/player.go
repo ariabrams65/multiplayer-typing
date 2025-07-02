@@ -10,6 +10,7 @@ import (
 type player struct {
 	id       string
 	username string
+	color    string
 	room     *room
 	conn     *websocket.Conn
 	send     chan serverMessage

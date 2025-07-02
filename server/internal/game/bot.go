@@ -73,7 +73,6 @@ func (bot *bot) startTyping(length int) {
 	for {
 		select {
 		case <-ticker.C:
-			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
 			err := bot.conn.WriteJSON(clientProgressMessage{
 				Index: index,
 			})

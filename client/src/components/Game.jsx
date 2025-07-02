@@ -6,7 +6,7 @@ import PlayerList from "./PlayerList";
 
 import styles from "./Game.module.css"
 
-const colors = ['#EB757A', '#DCEB75', '#BB75EB', '#EB75DE', '#7577EB', '#75CFEB', '#75EBCA'];
+// const colors = ['#EB757A', '#DCEB75', '#BB75EB', '#EB75DE', '#7577EB', '#75CFEB', '#75EBCA'];
 
 export default function Game() {
   const [prompt, setPrompt] = useState('');
@@ -31,32 +31,37 @@ export default function Game() {
   function handleMessage(msg) {
     const data = msg.data;
     switch (msg.type) {
-      case 'id':
+      case 'id': {
         setMyId(data.id);
         break;
-      case 'prompt':
+      }
+      case 'prompt': {
         setPrompt(data.text);
         break;
-      case 'joined':
+      }
+      case 'joined': {
         setPlayers(prev => {
           return [...prev, {
             id: data.id,
             username: data.username,
+            color: data.color,
             index: 0,
-            wpm: 0,
-            color: colors.pop()
+            wpm: 0
           }];
         });
         break;
-      case 'removed':
+      }
+      case 'removed': {
         setPlayers(prev => {
           return prev.filter(player => player.id !== data.id);
         });
         break;
-      case 'countdown':
+      }
+      case 'countdown': {
         setCountdown(data.time);
         break;
-      case 'progress':
+      }
+      case 'progress': {
         setPlayers(prev => {
           return prev.map((player) => {
             if (player.id === data.id) {
@@ -76,7 +81,8 @@ export default function Game() {
           });
         });
         break;
-      case 'wpm':
+      }
+      case 'wpm': {
         setPlayers(prev => {
           return prev.map((player) => {
             if (player.id === data.id) {
@@ -89,6 +95,7 @@ export default function Game() {
           });
         });
         break;
+      }
     }
   }
 
