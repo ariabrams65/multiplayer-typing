@@ -41,6 +41,7 @@ export default function Prompt({ input, prompt, players, myId }) {
     } else if (isOtherPlayersCaret(i)) {
       style = {
         "text-decoration": "underline",
+        "text-decoration-thickness": "4px",
         "text-decoration-color": getPlayersColor(i)
       };
     } else {
