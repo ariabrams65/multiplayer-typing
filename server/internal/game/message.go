@@ -105,6 +105,6 @@ func newWpmMessage(id string, wpm float64) serverMessage {
 }
 
 // client messages
-type receiveProgressMessage struct {
+type clientProgressMessage struct {
 	Index int `json:"index"`
 }

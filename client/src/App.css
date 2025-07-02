@@ -3,3 +3,7 @@ body {
   background-color: rgb(51, 58, 69);
   color: rgb(226, 226, 226);
 }
+
+* {
+  box-sizing: border-box;
+}

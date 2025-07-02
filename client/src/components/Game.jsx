@@ -128,10 +128,12 @@ export default function Game() {
   }
 
   return (
-    <div id={styles['game']} onClick={() => inputRef.current?.focus()}>
-      <p id={styles.status}>{gameStatus}</p>
-      <Prompt input={input} prompt={prompt} players={players} myId={myId} />
-      <PlayerList players={players} playerFinished={playerFinished} />
+    <>
+      <div id={styles['game']} onClick={() => inputRef.current?.focus()}>
+        <p id={styles.status}>{gameStatus}</p>
+        <Prompt input={input} prompt={prompt} players={players} myId={myId} />
+        <PlayerList players={players} playerFinished={playerFinished} />
+      </div>
       <input
         value={input}
         ref={inputRef}
@@ -142,6 +144,6 @@ export default function Game() {
         autoComplete="off"
         id={styles['hidden-input']}
       />
-    </div>
-  )
+    </>
+  );
 }

@@ -37,7 +37,7 @@ func (player *player) run() {
 func (player *player) runReadLoop() {
 	defer player.conn.Close()
 	for {
-		var msg receiveProgressMessage
+		var msg clientProgressMessage
 		err := player.conn.ReadJSON(&msg)
 		if err != nil {
 			player.room.removePlayer(player.id)

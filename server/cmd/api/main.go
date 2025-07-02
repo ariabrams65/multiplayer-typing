@@ -19,6 +19,12 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	go rm.Run()
+
+	// go func() {
+	// 	time.Sleep(time.Second * 3)
+	// 	game.SpawnBots(5)
+	// }()
+
 	router := gin.Default()
 	router.GET("/join", joinRoom)
 	router.GET("/debug/state", func(c *gin.Context) {
