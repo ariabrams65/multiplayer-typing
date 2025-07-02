@@ -1,10 +1,9 @@
 package game
 
 import (
-	"encoding/json"
-	"io"
 	"log"
-	"net/http"
+	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -250,23 +249,36 @@ func (room *room) getAvailableColor() string {
 }
 
 func generatePrompt() string {
-	defaultPrompt := "Here's to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes. The ones who see things differently. They're not fond of rules. And they have no respect for the status quo. You can quote them, disagree with them, glorify or vilify them. About the only thing you can't do is ignore them. Because they change things. They push the human race forward. And while some may see them as the crazy ones, we see genius. Because the people who are crazy enough to think they can change the world, are the ones who do."
-	res, err := http.Get("https://thequoteshub.com/api/")
-	if err != nil {
-		log.Print(err)
-		return defaultPrompt
+	// defaultPrompt := "Here's to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes. The ones who see things differently. They're not fond of rules. And they have no respect for the status quo. You can quote them, disagree with them, glorify or vilify them. About the only thing you can't do is ignore them. Because they change things. They push the human race forward. And while some may see them as the crazy ones, we see genius. Because the people who are crazy enough to think they can change the world, are the ones who do."
+	// res, err := http.Get("https://thequoteshub.com/api/")
+	// if err != nil {
+	// 	log.Print(err)
+	// 	return defaultPrompt
+	// }
+	// defer res.Body.Close()
+	// body, err := io.ReadAll(res.Body)
+	// if err != nil {
+	// 	log.Print(err)
+	// 	return defaultPrompt
+	// }
+	// obj := struct {
+	// 	Text string `json:"text"`
+	// }{}
+	// json.Unmarshal([]byte(body), &obj)
+	// return obj.Text
+	words := []string{
+		"the", "of", "a", "to", "you", "was", "are", "they", "from", "have",
+		"one", "what", "were", "there", "your", "their", "said", "do", "many", "some",
+		"would", "other", "into", "two", "could", "been", "who", "people", "only", "find",
+		"water", "very", "words", "where", "most", "through", "any", "another", "come", "work",
+		"word", "does", "put", "different", "again", "old", "great", "should", "Mr.", "give",
+		"something", "thought", "both", "often", "together", "don’t", "world", "want",
 	}
-	defer res.Body.Close()
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		log.Print(err)
-		return defaultPrompt
+	var result []string
+	for i := 0; i < 50; i++ {
+		result = append(result, words[rand.Intn(len(words))])
 	}
-	obj := struct {
-		Text string `json:"text"`
-	}{}
-	json.Unmarshal([]byte(body), &obj)
-	return obj.Text
+	return strings.Join(result, " ")
 }
 
 func calculateWpm(characters int, duration float64) float64 {
