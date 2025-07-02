@@ -34,15 +34,15 @@ export default function Prompt({ input, prompt, players, myId }) {
   function computeStyle(i) {
     const style = {};
     if (isMyCaret(i)) {
-      style["color"] = "rgb(226, 226, 226)"
-      style["border-radius"] = "2px";
-      style["background-color"] = getMyPlayersColor()
+      style.color = "rgb(226, 226, 226)"
+      style.borderRadius = "2px";
+      style.backgroundColor = getMyPlayersColor()
     } 
     if (isOtherPlayersCaret(i)) {
-      style["text-decoration"] = "underline";
-      style["text-underline-position"] = "under";
-      style["text-decoration-thickness"] = "4px";
-      style["text-decoration-color"] = getOtherPlayersColor(i)
+      style.textDecoration = "underline";
+      style.textUnderlinePosition = "under";
+      style.textDecorationThickness = "4px";
+      style.textDecorationColor = getOtherPlayersColor(i)
     }
     return style;
   }

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/ariabrams65/multiplayer-typing/server/internal/game"
 	"github.com/gin-gonic/gin"
@@ -20,10 +21,10 @@ var upgrader = websocket.Upgrader{
 func main() {
 	go rm.Run()
 
-	// go func() {
-	// 	time.Sleep(time.Second * 3)
-	// 	game.SpawnBots(20)
-	// }()
+	go func() {
+		time.Sleep(time.Second * 3)
+		game.SpawnBots(20)
+	}()
 
 	router := gin.Default()
 	router.GET("/join", joinRoom)
