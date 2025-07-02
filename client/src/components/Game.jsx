@@ -6,8 +6,6 @@ import PlayerList from "./PlayerList";
 
 import styles from "./Game.module.css"
 
-// const colors = ['#EB757A', '#DCEB75', '#BB75EB', '#EB75DE', '#7577EB', '#75CFEB', '#75EBCA'];
-
 export default function Game() {
   const [prompt, setPrompt] = useState('');
   const [countdown, setCountdown] = useState(null);
@@ -15,6 +13,7 @@ export default function Game() {
   const [myId, setMyId] = useState(null);
   const [input, setInput] = useState('');
 
+  const countdownRef = useRef(countdown);
   const ws = useRef(null);
   const inputRef = useRef(null)
 
@@ -52,13 +51,26 @@ export default function Game() {
         break;
       }
       case 'removed': {
-        setPlayers(prev => {
-          return prev.filter(player => player.id !== data.id);
-        });
+        if (countdownRef.current !== 0) {
+          setPlayers(prev => prev.filter(p => p.id !== data.id));
+        } else {
+          setPlayers(prev => {
+            return prev.map((player) => {
+              if (player.id === data.id) {
+                return {
+                  ...player,
+                  removed: true
+                };
+              }
+              return player;
+            });
+          });
+        }
         break;
       }
       case 'countdown': {
         setCountdown(data.time);
+        countdownRef.current = data.time;
         break;
       }
       case 'progress': {
@@ -139,7 +151,7 @@ export default function Game() {
       <div id={styles['game']} onClick={() => inputRef.current?.focus()}>
         <p id={styles.status}>{gameStatus}</p>
         <Prompt input={input} prompt={prompt} players={players} myId={myId} />
-        <PlayerList players={players} playerFinished={playerFinished} />
+        <PlayerList players={players} />
       </div>
       <input
         value={input}
