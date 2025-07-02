@@ -34,6 +34,7 @@ export default function Prompt({ input, prompt, players, myId }) {
   function computeStyle(i) {
     const style = {};
     if (isMyCaret(i)) {
+      style["color"] = "rgb(226, 226, 226)"
       style["border-radius"] = "2px";
       style["background-color"] = getMyPlayersColor()
     } 

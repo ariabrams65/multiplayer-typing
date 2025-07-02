@@ -19,3 +19,5 @@ github.com/ariabrams65/multiplayer-typing/server/internal/game.(*room).startWpmT
 created by github.com/ariabrams65/multiplayer-typing/server/internal/game.(*room).handleCountdownEvent in goroutine 7303
         /Users/ariabrams/git/multiplayer-typing/server/internal/game/room.go:183 +0xa0
 exit status 2
+
+room manager directly checks the num players in each room. This can cause race conditions. Send a message to the room to avoid race conditions

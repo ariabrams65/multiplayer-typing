@@ -272,7 +272,7 @@ func generatePrompt() string {
 		"would", "other", "into", "two", "could", "been", "who", "people", "only", "find",
 		"water", "very", "words", "where", "most", "through", "any", "another", "come", "work",
 		"word", "does", "put", "different", "again", "old", "great", "should", "Mr.", "give",
-		"something", "thought", "both", "often", "together", "don’t", "world", "want",
+		"something", "thought", "both", "often", "together", "don't", "world", "want",
 	}
 	var result []string
 	for i := 0; i < 50; i++ {

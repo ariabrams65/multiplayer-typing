@@ -19,14 +19,14 @@ type bot struct {
 	url    string
 	conn   *websocket.Conn
 	cancel chan struct{}
-	cps    int
+	wpm    int
 }
 
-func newBot(cps int) *bot {
+func newBot(wpm int) *bot {
 	u := url.URL{Scheme: "ws", Host: "localhost:8080", Path: "/join", RawQuery: "username=bot"}
 	return &bot{
 		url: u.String(),
-		cps: cps,
+		wpm: wpm,
 	}
 }
 
@@ -60,6 +60,7 @@ func (bot *bot) run() {
 			}
 		}
 		bot.startTyping(promptLength)
+		time.Sleep(time.Duration(rand.Intn(30)) * time.Second)
 		bot.conn.Close()
 	}
 }
@@ -67,12 +68,16 @@ func (bot *bot) run() {
 func (bot *bot) startTyping(length int) {
 	log.Println("started typing")
 	index := 0
-	ticker := time.NewTicker(time.Second / time.Duration(bot.cps))
+	cps := (float64(bot.wpm) / 60) * 5
+	ticker := time.NewTicker(time.Second / time.Duration(cps))
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ticker.C:
+			if rand.Intn(25) == 0 {
+				time.Sleep(time.Duration(rand.Intn(1500)) * time.Millisecond)
+			}
 			err := bot.conn.WriteJSON(clientProgressMessage{
 				Index: index,
 			})
@@ -95,8 +100,8 @@ func (bot *bot) cancelBot() {
 }
 
 func SpawnBots(num int) {
-	for i := 0; i < num; i++ {
-		num := rand.Intn(10) + 1
+	for range num {
+		num := rand.Intn(90) + 30
 		bot := newBot(num)
 		go bot.run()
 	}
