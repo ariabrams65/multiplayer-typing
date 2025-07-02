@@ -32,20 +32,16 @@ export default function Prompt({ input, prompt, players, myId }) {
   }
 
   function computeStyle(i) {
-    let style;
+    const style = {};
     if (isMyCaret(i)) {
-      style = {
-        "border-radius": "2px",
-        backgroundColor: getPlayersColor(i)
-      };
-    } else if (isOtherPlayersCaret(i)) {
-      style = {
-        "text-decoration": "underline",
-        "text-decoration-thickness": "4px",
-        "text-decoration-color": getPlayersColor(i)
-      };
-    } else {
-      style = null;
+      style["border-radius"] = "2px";
+      style["background-color"] = getMyPlayersColor()
+    } 
+    if (isOtherPlayersCaret(i)) {
+      style["text-decoration"] = "underline";
+      style["text-underline-position"] = "under";
+      style["text-decoration-thickness"] = "4px";
+      style["text-decoration-color"] = getOtherPlayersColor(i)
     }
     return style;
   }
@@ -58,17 +54,12 @@ export default function Prompt({ input, prompt, players, myId }) {
     return players.some(p => p.id !== myId && p.index === i);
   }
 
-  function getPlayersColor(index) {
-    let color = null;
-    for (const p of players) {
-      if (p.index === index) {
-        if (p.id === myId) {
-          return p.color;
-        }
-        color = p.color;
-      }
-    }
-    return color;
+  function getMyPlayersColor() {
+    return players.find(p => p.id === myId).color;
+  }
+
+  function getOtherPlayersColor(i) {
+    return players.find(p => p.id !== myId && p.index === i)?.color;
   }
   return <div id={styles.prompt}>{chars}</div>;
 }
