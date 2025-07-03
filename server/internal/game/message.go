@@ -106,6 +106,21 @@ func newWpmMessage(id string, wpm float64) serverMessage {
 	}
 }
 
+type playerFinishedMessage struct {
+	Id    string `json:"id"`
+	Place int    `json:"place"`
+}
+
+func newPlayerFinishedMessage(id string, place int) serverMessage {
+	return serverMessage{
+		Type: "finished",
+		Data: playerFinishedMessage{
+			Id:    id,
+			Place: place,
+		},
+	}
+}
+
 // client messages
 type clientProgressMessage struct {
 	Index int `json:"index"`

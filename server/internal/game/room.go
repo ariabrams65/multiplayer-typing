@@ -58,6 +58,7 @@ type room struct {
 	rm                *RoomManager
 	players           map[string]*player
 	prompt            string
+	nextPlace         int
 	inbox             chan roomEvent
 	gameStarted       bool
 	countdownLength   int
@@ -74,6 +75,7 @@ func newRoom(rm *RoomManager) *room {
 		rm:                rm,
 		players:           make(map[string]*player),
 		prompt:            generatePrompt(),
+		nextPlace:         1,
 		inbox:             make(chan roomEvent),
 		gameStarted:       false,
 		countdownLength:   10,
@@ -143,6 +145,13 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 		player.index,
 		player.wpm,
 	))
+	if room.isPlayerFinished(player.id) {
+		room.sendToAll(newPlayerFinishedMessage(
+			player.id,
+			room.nextPlace,
+		))
+		room.nextPlace++
+	}
 }
 
 func (room *room) handlePlayerJoined(event playerJoinedEvent) {

@@ -7,6 +7,7 @@
 .player {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     color: rgb(51, 58, 69);
     padding: 10px;
     margin-bottom: 20px;
@@ -19,5 +20,6 @@
     filter: brightness(40%);
 }
 
-.finished {
+.first {
+    color: rgb(255, 186, 13)
 }

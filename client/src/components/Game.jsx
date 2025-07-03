@@ -108,11 +108,24 @@ export default function Game() {
         });
         break;
       }
+      case 'finished': {
+        setPlayers(prev => {
+          return prev.map((player) => {
+            if (player.id === data.id) {
+              return {
+                ...player,
+                place: data.place
+              };
+            }
+            return player;
+          });
+        })
+      }
     }
   }
 
   function handleInput(e) {
-    if (playerFinished(myId) || countdown !== 0) return;
+    if (players.find(p => p.id === myId).place || countdown !== 0) return;
     setInput(e.target.value);
     const newIndex = firstDiffIndex(e.target.value, prompt);
     const currentIndex = players.find(p => p.id === myId).index;
@@ -133,9 +146,6 @@ export default function Game() {
     }
   }
 
-  function playerFinished(id) {
-    return players.find(p => p.id === id).index === prompt.length;
-  }
 
   let gameStatus;
   if (countdown === null) {
@@ -151,7 +161,7 @@ export default function Game() {
       <div id={styles['game']} onClick={() => inputRef.current?.focus()}>
         <p id={styles.status}>{gameStatus}</p>
         <Prompt input={input} prompt={prompt} players={players} myId={myId} />
-        <PlayerList players={players} playerFinished={playerFinished} />
+        <PlayerList players={players} />
       </div>
       <input
         value={input}
