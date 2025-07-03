@@ -12,6 +12,7 @@ export default function Game() {
   const [players, setPlayers] = useState([]);
   const [myId, setMyId] = useState(null);
   const [input, setInput] = useState('');
+  const [focused, setFocused] = useState(true);
 
   const ws = useRef(null);
   const inputRef = useRef(null)
@@ -146,11 +147,16 @@ export default function Game() {
     gameStatus = "";
   }
 
+  function handleClick() {
+    inputRef.current.focus();
+    setFocused(true);
+  }
+
   return (
     <>
-      <div id={styles['game']} onClick={() => inputRef.current?.focus()}>
+      <div id={styles['game']} onClick={handleClick}>
         <p id={styles.status}>{gameStatus}</p>
-        <Prompt input={input} prompt={prompt} players={players} myId={myId} />
+        <Prompt input={input} prompt={prompt} players={players} myId={myId} focused={focused}/>
         <PlayerList players={players} myId={myId} />
         <p id={styles['info']}>Press {"<Enter>"} to restart</p>
       </div>
@@ -164,6 +170,7 @@ export default function Game() {
         autoComplete="off"
         id={styles['hidden-input']}
         onKeyDown={handleKeyDown}
+        onBlur={() => setFocused(false)}
       />
     </>
   );

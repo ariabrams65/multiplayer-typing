@@ -20,6 +20,7 @@
 }
 
 .first {
-    color: rgb(255, 186, 13);
+    color: gold;    
     box-shadow: 0 0 10px #9ecaed;
+    text-shadow: 0 0 5px rgb(47, 47, 47);
 }

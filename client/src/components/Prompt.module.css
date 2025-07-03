@@ -16,3 +16,9 @@
   white-space: pre-wrap;
   line-height: 1.5em;
 }
+
+.unfocused {
+  filter: blur(4px);
+  transition: filter 0.5s ease;
+
+}

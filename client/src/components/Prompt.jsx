@@ -2,7 +2,7 @@ import { firstDiffIndex } from "../utils";
 
 import styles from "./Prompt.module.css"
 
-export default function Prompt({ input, prompt, players, myId }) {
+export default function Prompt({ input, prompt, players, myId, focused }) {
   const firstDiff = firstDiffIndex(input, prompt);
   const chars = [];
 
@@ -65,5 +65,5 @@ export default function Prompt({ input, prompt, players, myId }) {
   function getOtherPlayersColor(i) {
     return players.find(p => p.id !== myId && p.index === i)?.color;
   }
-  return <div id={styles.prompt}>{chars}</div>;
+  return <div id={styles.prompt} className={focused ? "" : styles.unfocused}>{chars}</div>;
 }
