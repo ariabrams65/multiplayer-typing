@@ -27,6 +27,18 @@ export default function Game() {
     }
   }, []);
 
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === "Enter") {
+          location.reload();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []); 
+
   function handleMessage(msg) {
     const data = msg.data;
     switch (msg.type) {
@@ -131,13 +143,6 @@ export default function Game() {
     }
   }
 
-  function handleKeyDown(e) {
-    if (e.key === "Enter") {
-      location.reload();
-    }
-  }
-
-
   let gameStatus;
   if (countdown === null) {
     gameStatus = "Waiting for players to join..." ;
@@ -169,7 +174,6 @@ export default function Game() {
         spellCheck={false}
         autoComplete="off"
         id={styles['hidden-input']}
-        onKeyDown={handleKeyDown}
         onBlur={() => setFocused(false)}
       />
     </>
