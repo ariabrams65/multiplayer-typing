@@ -51,21 +51,7 @@ export default function Game() {
         break;
       }
       case 'removed': {
-        if (countdownRef.current !== 0) {
-          setPlayers(prev => prev.filter(p => p.id !== data.id));
-        } else {
-          setPlayers(prev => {
-            return prev.map((player) => {
-              if (player.id === data.id) {
-                return {
-                  ...player,
-                  removed: true
-                };
-              }
-              return player;
-            });
-          });
-        }
+        setPlayers(prev => prev.filter(p => p.id !== data.id || p.place));
         break;
       }
       case 'countdown': {

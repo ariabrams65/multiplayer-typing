@@ -9,17 +9,15 @@
     justify-content: space-between;
     align-items: center;
     color: rgb(51, 58, 69);
-    padding: 10px;
+    padding: 8px;
     margin-bottom: 20px;
-    width: 75%;
-    max-width: 500px;
     border-radius: 5px;
 }
 
-.removed {
-    filter: brightness(40%);
+.finished {
 }
 
 .first {
-    color: rgb(255, 186, 13)
+    color: rgb(255, 186, 13);
+    box-shadow: 0 0 10px #9ecaed;
 }

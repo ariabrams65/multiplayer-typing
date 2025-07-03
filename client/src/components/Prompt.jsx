@@ -52,7 +52,7 @@ export default function Prompt({ input, prompt, players, myId }) {
   }
 
   function isOtherPlayersCaret(i) {
-    return players.some(p => p.id !== myId && p.index === i && !p.removed);
+    return players.some(p => p.id !== myId && p.index === i);
   }
 
   function getMyPlayersColor() {
@@ -60,7 +60,7 @@ export default function Prompt({ input, prompt, players, myId }) {
   }
 
   function getOtherPlayersColor(i) {
-    return players.find(p => p.id !== myId && p.index === i && !p.removed)?.color;
+    return players.find(p => p.id !== myId && p.index === i)?.color;
   }
   return <div id={styles.prompt}>{chars}</div>;
 }
