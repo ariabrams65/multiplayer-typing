@@ -145,7 +145,7 @@ export default function Game() {
       <div id={styles['game']} onClick={() => inputRef.current?.focus()}>
         <p id={styles.status}>{gameStatus}</p>
         <Prompt input={input} prompt={prompt} players={players} myId={myId} />
-        <PlayerList players={players} />
+        <PlayerList players={players} myId={myId} />
       </div>
       <input
         value={input}

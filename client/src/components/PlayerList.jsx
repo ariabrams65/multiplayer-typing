@@ -1,6 +1,14 @@
 import styles from "./PlayerList.module.css"
 
-export default function PlayerList({ players }) {
+export default function PlayerList({ players, myId }) {
+  players.sort((a, b) => {
+    if (a.id === myId) {
+      return -1;
+    } else if (b.id === myId) {
+      return 1;
+    }
+    return 0;
+  });
   return (
     <ol id={styles['player-list']}>
       {players.map(p => (
