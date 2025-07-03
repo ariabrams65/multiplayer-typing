@@ -13,7 +13,6 @@ export default function Game() {
   const [myId, setMyId] = useState(null);
   const [input, setInput] = useState('');
 
-  const countdownRef = useRef(countdown);
   const ws = useRef(null);
   const inputRef = useRef(null)
 
@@ -56,7 +55,6 @@ export default function Game() {
       }
       case 'countdown': {
         setCountdown(data.time);
-        countdownRef.current = data.time;
         break;
       }
       case 'progress': {
