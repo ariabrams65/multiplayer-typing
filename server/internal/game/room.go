@@ -81,7 +81,7 @@ func newRoom(rm *RoomManager) *room {
 		countdownLength:   10,
 		countdownStarted:  false,
 		numPlayersToStart: 2,
-		availableColors:   []string{"#EB757A", "#DCEB75", "#BB75EB", "#EB75DE", "#7577EB", "#75CFEB", "#75EBCA"},
+		availableColors:   []string{"#4294f5", "#BB75EB", "#EB75DE", "#7577EB", "#75CFEB", "#75EBCA"},
 		cancel:            make(chan struct{}),
 	}
 }

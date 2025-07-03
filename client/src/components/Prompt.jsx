@@ -35,14 +35,17 @@ export default function Prompt({ input, prompt, players, myId }) {
     const style = {};
     if (isMyCaret(i)) {
       style.color = "rgb(226, 226, 226)"
-      style.borderRadius = "2px";
+      style.borderRadius = "3px";
       style.backgroundColor = getMyPlayersColor()
+      style.textShadow = "0 0 5px black"
     } 
     if (isOtherPlayersCaret(i)) {
       style.textDecoration = "underline";
       style.textUnderlinePosition = "under";
       style.textDecorationThickness = "4px";
       style.textDecorationColor = getOtherPlayersColor(i)
+      // style.borderRadius = "3px";
+      // style.boxShadow = `0 0 6px ${getOtherPlayersColor(i)}`
     }
     return style;
   }
