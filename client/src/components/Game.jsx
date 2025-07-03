@@ -130,6 +130,12 @@ export default function Game() {
     }
   }
 
+  function handleKeyDown(e) {
+    if (e.key === "Enter") {
+      location.reload();
+    }
+  }
+
 
   let gameStatus;
   if (countdown === null) {
@@ -146,6 +152,7 @@ export default function Game() {
         <p id={styles.status}>{gameStatus}</p>
         <Prompt input={input} prompt={prompt} players={players} myId={myId} />
         <PlayerList players={players} myId={myId} />
+        <p id={styles['info']}>Press Enter to restart</p>
       </div>
       <input
         value={input}
@@ -156,6 +163,7 @@ export default function Game() {
         spellCheck={false}
         autoComplete="off"
         id={styles['hidden-input']}
+        onKeyDown={handleKeyDown}
       />
     </>
   );

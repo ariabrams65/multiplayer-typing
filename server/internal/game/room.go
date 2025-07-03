@@ -252,7 +252,6 @@ func (room *room) isProgressValid(id string, index int) bool {
 
 func (room *room) getAvailableColor() string {
 	if len(room.availableColors) == 0 {
-		log.Println("here")
 		return "#18CDF1"
 	}
 	i := len(room.availableColors) - 1
