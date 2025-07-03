@@ -94,7 +94,13 @@ func (rm *RoomManager) createNewRoom() *room {
 func (rm *RoomManager) DumpState() string {
 	var out strings.Builder
 
+	totalPlayers := 0
+	for _, room := range rm.rooms {
+		totalPlayers += len(room.players)
+	}
+
 	out.WriteString("=======================\n")
+	fmt.Fprintf(&out, "Total players: %d\n", totalPlayers)
 	for _, room := range rm.rooms {
 		fmt.Fprintf(&out, "Room: %s\n", room.id)
 		fmt.Fprintf(&out, "Game Started: %v\n", room.gameStarted)

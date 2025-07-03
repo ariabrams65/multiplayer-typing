@@ -162,7 +162,7 @@ export default function Game() {
       <div id={styles['game']} onClick={handleClick}>
         <p id={styles.status}>{gameStatus}</p>
         <Prompt input={input} prompt={prompt} players={players} myId={myId} focused={focused}/>
-        <PlayerList players={players} myId={myId} />
+        <PlayerList players={players} myId={myId} prompt={prompt}/>
         <p id={styles['info']}>Press {"<Enter>"} to restart</p>
       </div>
       <input

@@ -16,11 +16,8 @@
     box-shadow: 3px 3px 8px #282828;
 }
 
-.finished {
-}
-
 .first {
-    color: gold;    
+    color: rgb(255, 255, 255);    
     box-shadow: 0 0 10px #9ecaed;
     text-shadow: 0 0 5px rgb(47, 47, 47);
 }
