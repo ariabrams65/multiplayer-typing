@@ -23,3 +23,5 @@ exit status 2
 room manager directly checks the num players in each room. This can cause race conditions. Send a message to the room to avoid race conditions
 
 keybr has smooth underline
+
+player could join after game starts which would cause them to never get the 0 countdown
