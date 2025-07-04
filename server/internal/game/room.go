@@ -4,6 +4,7 @@ import (
 	"log"
 	"math/rand"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -67,6 +68,7 @@ type room struct {
 	startTime         time.Time
 	availableColors   []string
 	cancel            chan struct{}
+	wg                sync.WaitGroup
 }
 
 func newRoom(rm *RoomManager) *room {
@@ -87,6 +89,8 @@ func newRoom(rm *RoomManager) *room {
 }
 
 func (room *room) startCountdown() {
+	room.wg.Add(1)
+	defer room.wg.Done()
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
@@ -101,6 +105,8 @@ func (room *room) startCountdown() {
 }
 
 func (room *room) startWpmTicker() {
+	room.wg.Add(1)
+	defer room.wg.Done()
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
@@ -240,6 +246,7 @@ func (room *room) shouldStartCountdown() bool {
 
 func (room *room) cleanup() {
 	close(room.cancel)
+	room.wg.Wait()
 	close(room.inbox)
 }
 

@@ -23,7 +23,7 @@ func main() {
 
 	go func() {
 		time.Sleep(time.Second * 3)
-		game.SpawnBots(100)
+		game.SpawnBots(500)
 	}()
 
 	router := gin.Default()
