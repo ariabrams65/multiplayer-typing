@@ -21,3 +21,5 @@ created by github.com/ariabrams65/multiplayer-typing/server/internal/game.(*room
 exit status 2
 
 room manager directly checks the num players in each room. This can cause race conditions. Send a message to the room to avoid race conditions
+
+keybr has smooth underline
