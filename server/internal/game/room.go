@@ -24,19 +24,19 @@ func (e playerProgressEvent) roomEventType() string {
 	return "player-progress"
 }
 
-type playerJoinedEvent struct {
+type addPlayerEvent struct {
 	player *player
 }
 
-func (e playerJoinedEvent) roomEventType() string {
+func (e addPlayerEvent) roomEventType() string {
 	return "player-joined"
 }
 
-type playerLeftEvent struct {
+type removePlayerEvent struct {
 	id string
 }
 
-func (e playerLeftEvent) roomEventType() string {
+func (e removePlayerEvent) roomEventType() string {
 	return "player-left"
 }
 
@@ -125,10 +125,10 @@ func (room *room) run() {
 		switch e := event.(type) {
 		case playerProgressEvent:
 			room.handlePlayerProgress(e)
-		case playerJoinedEvent:
-			room.handlePlayerJoined(e)
-		case playerLeftEvent:
-			room.handlePlayerLeft(e)
+		case addPlayerEvent:
+			room.handleAddPlayer(e)
+		case removePlayerEvent:
+			room.handleRemovePlayer(e)
 		case countdownEvent:
 			room.handleCountdownEvent(e)
 		case wpmEvent:
@@ -160,7 +160,7 @@ func (room *room) handlePlayerProgress(event playerProgressEvent) {
 	}
 }
 
-func (room *room) handlePlayerJoined(event playerJoinedEvent) {
+func (room *room) handleAddPlayer(event addPlayerEvent) {
 	event.player.color = room.getAvailableColor()
 	event.player.run()
 	event.player.sendMsg(newIdMessage(event.player.id))
@@ -178,7 +178,7 @@ func (room *room) handlePlayerJoined(event playerJoinedEvent) {
 	}
 }
 
-func (room *room) handlePlayerLeft(event playerLeftEvent) {
+func (room *room) handleRemovePlayer(event removePlayerEvent) {
 	close(room.players[event.id].send)
 	delete(room.players, event.id)
 	if len(room.players) == 0 {
@@ -229,11 +229,11 @@ func (room *room) isPlayerFinished(id string) bool {
 }
 
 func (room *room) addPlayer(username string, conn *websocket.Conn) {
-	room.inbox <- playerJoinedEvent{newPlayer(username, conn, room)}
+	room.inbox <- addPlayerEvent{newPlayer(username, conn, room)}
 }
 
 func (room *room) removePlayer(id string) {
-	room.inbox <- playerLeftEvent{id}
+	room.inbox <- removePlayerEvent{id}
 }
 
 func (room *room) updatePlayerProgress(id string, index int) {

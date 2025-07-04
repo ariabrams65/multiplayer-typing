@@ -66,7 +66,6 @@ func (bot *bot) run() {
 }
 
 func (bot *bot) startTyping(length int) {
-	log.Println("started typing")
 	index := 0
 	cps := (float64(bot.wpm) / 60) * 5
 	ticker := time.NewTicker(time.Second / time.Duration(cps))
