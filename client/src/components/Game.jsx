@@ -91,6 +91,7 @@ export default function Game() {
           return prev.map((player) => {
             if (player.id === data.id) {
               if (data.id === myId) {
+                console.log("index: ", player.index)
                 return {
                   ...player,
                   wpm: data.wpm
