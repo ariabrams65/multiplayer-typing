@@ -145,7 +145,7 @@ export default function Game() {
     const newIndex = firstDiffIndex(e.target.value, prompt);
     const currentIndex = players.find(p => p.id === myId).index;
     if (newIndex <= currentIndex + 1 && newIndex !== currentIndex) {
-      console.log(`sending index: ${newIndex}`);
+      console.log(`sendingxxxxx index: ${newIndex}`);
       ws.current.send(JSON.stringify({ index: newIndex }));
       setPlayers(prev => {
         return prev.map((player) => {
