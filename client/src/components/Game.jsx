@@ -6,6 +6,8 @@ import PlayerList from "./PlayerList";
 
 import styles from "./Game.module.css"
 
+const API_WS_URL = import.meta.env.VITE_WS_URL
+
 export default function Game() {
   const [prompt, setPrompt] = useState('');
   const [countdown, setCountdown] = useState(null);
@@ -19,7 +21,7 @@ export default function Game() {
   const inputRef = useRef(null)
 
   useEffect(() => {
-    ws.current = new WebSocket(`ws://localhost:8080/join?username=GUEST`);
+    ws.current = new WebSocket(`${API_WS_URL}?username=GUEST`);
     ws.current.onopen = () => {
       setConnected(true)
     }
