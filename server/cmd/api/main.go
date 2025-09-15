@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"runtime"
+	"time"
 
 	"github.com/ariabrams65/multiplayer-typing/server/internal/game"
 	"github.com/gin-gonic/gin"
@@ -24,6 +26,13 @@ func main() {
 	router.GET("/debug/state", func(c *gin.Context) {
 		c.String(http.StatusOK, rm.DumpState())
 	})
+
+	go func() {
+		for {
+			log.Println(runtime.NumGoroutine())
+			time.Sleep(10 * time.Second)
+		}
+	}()
 	router.Run("localhost:8080")
 }
 

@@ -13,14 +13,24 @@ export default function Game() {
   const [myId, setMyId] = useState(null);
   const [input, setInput] = useState('');
   const [focused, setFocused] = useState(true);
+  const [connected, setConnected] = useState(true);
 
   const ws = useRef(null);
   const inputRef = useRef(null)
 
   useEffect(() => {
     ws.current = new WebSocket(`ws://localhost:8080/join?username=GUEST`);
+    ws.current.onopen = () => {
+      setConnected(true)
+    }
     ws.current.onmessage = (e) => {
       handleMessage(JSON.parse(e.data));
+    }
+    ws.current.onerror = () => {
+      setConnected(false)
+    }
+    ws.current.onclose = () => {
+      setConnected(false)
     }
     return () => {
       ws.current.close();
@@ -38,6 +48,10 @@ export default function Game() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []); 
+
+  if (!connected) {
+    return <p>Connection to server failed</p>
+  }
 
   function handleMessage(msg) {
     const data = msg.data;

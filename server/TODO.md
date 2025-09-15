@@ -25,3 +25,13 @@ room manager directly checks the num players in each room. This can cause race c
 keybr has smooth underline
 
 player could join after game starts which would cause them to never get the 0 countdown
+
+-----
+I've been bitten by the naive broadcast implementation. A few notes from my own experience:
+
+If a remote client isn't reading from their websockets, the writer goroutine will hang and stop consuming from its channel. You want to make sure there's a decent buffer on that channel to avoid the multiplexer hanging sending to that channel (if that happens, everyone stops getting messages). Even then, if a client hangs around long enough without consuming from their channel it will eventually fill up, so you'll want to wrap sends in a select statement and decide what to do if you can't send (drop messages? Disconnect clients? Depends on your use case).
+
+-----
+
+
+I think its freezing with lots of players because the room is waiting to write to the send channel and the player isn't reading from it. Need to fiture out how to delete player when read json fails without crashing server
