@@ -90,6 +90,7 @@ export default function Game() {
         setPlayers(prev => {
           return prev.map((player) => {
             if (player.id === data.id) {
+              console.log(`player.id: ${player.id}, data.id: ${data.id}, my.id: ${myId}`)
               if (data.id === myId) {
                 console.log("index: ", player.index)
                 return {
