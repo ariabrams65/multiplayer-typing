@@ -36,6 +36,7 @@ export default function Game() {
     }
   }, []);
 
+  //Callback gets reset every time myId changes so that we always have the most up to date version in the callback
   useEffect(() => {
     if (!ws.current) return;
     ws.current.onmessage = (e) => {
