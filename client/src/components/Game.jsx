@@ -25,9 +25,6 @@ export default function Game() {
     ws.current.onopen = () => {
       setConnected(true)
     }
-    ws.current.onmessage = (e) => {
-      handleMessage(JSON.parse(e.data));
-    }
     ws.current.onerror = () => {
       setConnected(false)
     }
@@ -38,6 +35,13 @@ export default function Game() {
       ws.current.close();
     }
   }, []);
+
+  useEffect(() => {
+    if (!ws.current) return;
+    ws.current.onmessage = (e) => {
+      handleMessage(JSON.parse(e.data));
+    }
+  }, [myId]);
 
   useEffect(() => {
     function handleKeyDown(event) {
