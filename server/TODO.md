@@ -35,3 +35,5 @@ If a remote client isn't reading from their websockets, the writer goroutine wil
 
 
 I think its freezing with lots of players because the room is waiting to write to the send channel and the player isn't reading from it. Need to fiture out how to delete player when read json fails without crashing server
+
+sometimes game starts when only 1 players is in lobby. Seems to happen after HMR maybe

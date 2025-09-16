@@ -90,9 +90,7 @@ export default function Game() {
         setPlayers(prev => {
           return prev.map((player) => {
             if (player.id === data.id) {
-              console.log(`player.id: ${player.id}, data.id: ${data.id}, my.id: ${myId}`)
               if (data.id === myId) {
-                console.log("index: ", player.index)
                 return {
                   ...player,
                   wpm: data.wpm
@@ -145,7 +143,6 @@ export default function Game() {
     const newIndex = firstDiffIndex(e.target.value, prompt);
     const currentIndex = players.find(p => p.id === myId).index;
     if (newIndex <= currentIndex + 1 && newIndex !== currentIndex) {
-      console.log(`sendingxxxxx index: ${newIndex}`);
       ws.current.send(JSON.stringify({ index: newIndex }));
       setPlayers(prev => {
         return prev.map((player) => {
