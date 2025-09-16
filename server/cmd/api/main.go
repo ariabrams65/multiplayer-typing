@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"runtime"
 	"time"
 
@@ -33,7 +34,12 @@ func main() {
 			time.Sleep(10 * time.Second)
 		}
 	}()
-	router.Run("0.0.0.0:8080")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	router.Run(":" + port)
 }
 
 func joinRoom(c *gin.Context) {
