@@ -95,6 +95,7 @@ export default function Game() {
           return prev.map((player) => {
             if (player.id === data.id) {
               if (data.id === myId) {
+                console.log(`player.id: ${player.id}, data.id: ${data.id}, my.id: ${myId}`)
                 return {
                   ...player,
                   wpm: data.wpm
